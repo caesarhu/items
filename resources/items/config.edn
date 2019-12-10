@@ -1,0 +1,16 @@
+{:duct.profile/base
+ {:duct.core/project-ns items
+
+  :duct.migrator/ragtime
+  {:migrations [#ig/ref :items.migrations/create-film]}
+
+  [:duct.migrator.ragtime/sql :items.migrations/create-film]
+  {:up ["CREATE TABLE film (id SERIAL PRIMARY KEY, name TEXT UNIQUE, description TEXT, rating INTEGER)"]
+   :down ["DROP TABLE film"]}}
+
+ :duct.profile/dev   #duct/include "dev"
+ :duct.profile/local #duct/include "local"
+ :duct.profile/prod  {}
+
+ :duct.module/logging {}
+ :duct.module/sql {}}
