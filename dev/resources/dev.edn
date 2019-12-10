@@ -1,3 +1,2 @@
 {:duct.database/sql
- {:connection-uri "jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"}}
-
+ {:jdbc-url "jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"}}

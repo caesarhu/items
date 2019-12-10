@@ -14,5 +14,4 @@ pom.xml.asc
 /dev/src/local.clj
 /db
 /.idea
-*.iml
-
+/items.iml

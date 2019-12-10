@@ -7,7 +7,6 @@
                  [duct/module.logging "0.5.0"]
                  [com.fzakaria/slf4j-timbre "0.3.14"]
                  [duct/module.sql "0.6.0"]
-                 [duct/database.sql.hikaricp "0.4.0"]
                  [org.postgresql/postgresql "42.2.9"]
                  [hawk "0.2.11"]]
   :plugins [[duct/lein-duct "0.12.1"]]

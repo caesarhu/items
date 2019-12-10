@@ -2,11 +2,16 @@
  {:duct.core/project-ns items
 
   :duct.migrator/ragtime
-  {:migrations [#ig/ref :items.migrations/create-film]}
+  {:migrations [#ig/ref :items.migrations/create-users
+                #ig/ref :items.migrations/create-items]}
 
-  [:duct.migrator.ragtime/sql :items.migrations/create-film]
-  {:up ["CREATE TABLE film (id SERIAL PRIMARY KEY, name TEXT UNIQUE, description TEXT, rating INTEGER)"]
-   :down ["DROP TABLE film"]}}
+  [:duct.migrator.ragtime/sql :items.migrations/create-items]
+  {:up [#duct/resource "migrations/create-table-items-2019-12-10.sql"]
+   :down [#duct/resource "migrations/drop-table-items-2019-12-10.sql"]}
+
+  [:duct.migrator.ragtime/sql :items.migrations/create-users]
+  {:up [#duct/resource "migrations/create-table-users-2019-12-10.sql"]
+   :down [#duct/resource "migrations/drop-table-users-2019-12-10.sql"]}}
 
  :duct.profile/dev   #duct/include "dev"
  :duct.profile/local #duct/include "local"
