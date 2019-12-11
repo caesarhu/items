@@ -5,11 +5,14 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [duct/core "0.8.0"]
                  [duct/module.logging "0.5.0"]
-                 [com.fzakaria/slf4j-timbre "0.3.14"]
+                 ;[com.fzakaria/slf4j-timbre "0.3.14"]
                  [duct/module.sql "0.6.0"]
                  [org.postgresql/postgresql "42.2.9"]
                  [hawk "0.2.11"]
-                 [com.layerware/hugsql "0.5.1"]]
+                 [com.layerware/hugsql "0.5.1"]
+                 ;; library by myself
+                 [com.github.caesarhu/shun "v0.1.1"]]
+  :repositories [["jitpack" "https://jitpack.io"]]
   :plugins [[duct/lein-duct "0.12.1"]]
   :main ^:skip-aot items.main
   :resource-paths ["resources" "target/resources"]

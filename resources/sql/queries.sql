@@ -1,4 +1,4 @@
--- :name new-get-items-period-item :? :*
+-- :name get-items-period-record :? :*
 -- :doc 取得期間內的table record 並結合itemlist table
 select items.*, t2.項目清單, t4.項目人數, t6.所有項目數量 from items
 left join
@@ -25,7 +25,7 @@ on items.id = t6.items_id
 WHERE 查獲時間 >= :start-date and 查獲時間 < :end-date
 ORDER BY 單位, 子單位, 員警姓名, 查獲時間
 
--- :name new-stats-all :? :*
+-- :name get-stats-all :? :*
 -- :doc 取得期間內全局的危險物品(危安物品)的統計資料
 SELECT items.單位, items.子單位, 員警姓名, itemlist.種類, itemlist.類別,
 	count(itemlist.類別) as 合計

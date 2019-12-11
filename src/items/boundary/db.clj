@@ -7,18 +7,17 @@
 
 (hugsql/def-db-fns "sql/queries.sql")
 
-(defprotocol UnitDatabase
-  (units [db]))
-
-(extend-protocol UnitDatabase
-  duct.database.sql.Boundary
-  (units [{db :spec}]
-    (get-units db)))
-
-(defprotocol UserDatabase
+(defprotocol ToolDatabase
+  (units [db])
   (users [db]))
 
-(extend-protocol UserDatabase
+(extend-protocol ToolDatabase
   duct.database.sql.Boundary
-  (users [db]
+  (units [{db :spec}]
+    (get-units db))
+  (users [{db :spec}]
     (get-users db)))
+
+(defprotocol InsertDatabase
+  (units [db])
+  (users [db]))

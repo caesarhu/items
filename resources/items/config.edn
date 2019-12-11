@@ -23,4 +23,5 @@
  :duct.profile/prod  {}
 
  :duct.module/logging {}
+
  :duct.module/sql {}}
