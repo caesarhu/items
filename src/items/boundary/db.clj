@@ -42,7 +42,7 @@
 
 (defprotocol ItemsDatabase
   (items-period-record [db start-date end-date])
-  (items-by-id [id])
+  (items-by-id [db id])
   (stats-all [db start-date end-date]))
 
 (extend-protocol ItemsDatabase
@@ -52,7 +52,7 @@
       (get-items-period-record db {:start-date start-date :end-date end-date})
       (catch SQLException ex
         (log (logger) :error (format "Query failed due to %s" (.getMessage ex))))))
-  (items-by-id [id]
+  (items-by-id [{db :spec} id]
     (try
       (get-items-by-id db {:id id})
       (catch SQLException ex

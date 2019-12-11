@@ -39,4 +39,5 @@
 
  :duct.module/logging {}
 
- :duct.module/sql {}}
+ :duct.module/sql
+ {:duct.database.sql/hikaricp {:jdbc-url #duct/env ["JDBC_URL"]}}}
