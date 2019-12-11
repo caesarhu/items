@@ -7,11 +7,11 @@
 
 (hugsql/def-db-fns "sql/queries.sql")
 
-(defprotocol ToolDatabase
+(defprotocol QueryDatabase
   (units [db])
   (users [db]))
 
-(extend-protocol ToolDatabase
+(extend-protocol QueryDatabase
   duct.database.sql.Boundary
   (units [{db :spec}]
     (get-units db))
@@ -19,5 +19,11 @@
     (get-users db)))
 
 (defprotocol InsertDatabase
-  (units [db])
-  (users [db]))
+  (insert-table-record [db table record]))
+
+(extend-protocol InsertDatabase
+  duct.database.sql.Boundary
+  (insert-table-record [{db :spec} table record]
+    (let [column-names (map name (keys record))
+          column-vals (vals record)]
+      (insert-table! db {:table table :column-names column-names :column-vals column-vals}))))
