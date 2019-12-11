@@ -25,40 +25,38 @@
         (log (logger) :error (format "Can not query units due to %s" (.getMessage ex)))))))
 
 (defprotocol InsertDatabase
-  (insert-table-record [db table record]))
+  (insert-table-record [db m]))
 
 (extend-protocol InsertDatabase
   duct.database.sql.Boundary
-  (insert-table-record [{db :spec} table record]
+  (insert-table-record [{db :spec} m]
     (try
-      (let [column-names (map name (keys record))
-            column-vals (vals record)
-            result (insert-table! db {:table table :column-names column-names :column-vals column-vals})]
+      (let [result (insert-table! db m)]
         (if-let [id (val (ffirst result))]
           {:id id}
-          (log (logger) :error ["Failed to add record." table record])))
+          (log (logger) :error ["Failed to add record." m])))
       (catch SQLException ex
         (log (logger) :error (format "Record not added due to %s" (.getMessage ex)))))))
 
 (defprotocol ItemsDatabase
-  (items-period-record [db start-date end-date])
-  (items-by-id [db id])
-  (stats-all [db start-date end-date]))
+  (items-period-record [db m])
+  (items-by-id [db m])
+  (stats-all [db m]))
 
 (extend-protocol ItemsDatabase
   duct.database.sql.Boundary
-  (items-period-record [{db :spec} start-date end-date]
+  (items-period-record [{db :spec} m]
     (try
-      (get-items-period-record db {:start-date start-date :end-date end-date})
+      (get-items-period-record db m)
       (catch SQLException ex
         (log (logger) :error (format "Query failed due to %s" (.getMessage ex))))))
-  (items-by-id [{db :spec} id]
+  (items-by-id [{db :spec} m]
     (try
-      (get-items-by-id db {:id id})
+      (get-items-by-id db m)
       (catch SQLException ex
         (log (logger) :error (format "Query failed due to %s" (.getMessage ex))))))
-  (stats-all [{db :spec} start-date end-date]
+  (stats-all [{db :spec} m]
     (try
-      (get-stats-all db {:start-date start-date :end-date end-date})
+      (get-stats-all db m)
       (catch SQLException ex
         (log (logger) :error (format "Query failed due to %s" (.getMessage ex)))))))
