@@ -15,9 +15,15 @@
 (extend-protocol QueryDatabase
   duct.database.sql.Boundary
   (units [{db :spec}]
-    (get-units db))
+    (try
+      (get-units db)
+      (catch SQLException ex
+        {:errors [(format "Can not query units due to %s" (.getMessage ex))]})))
   (users [{db :spec}]
-    (get-users db)))
+    (try
+      (get-users db)
+      (catch SQLException ex
+        {:errors [(format "Can not query users due to %s" (.getMessage ex))]}))))
 
 (defprotocol InsertDatabase
   (insert-table-record [db table record]))
@@ -33,4 +39,4 @@
           {:id id}
           {:errors ["Failed to add record." table record]}))
       (catch SQLException ex
-        {:errors [(format "Record not added due to %s" (.getMessage ex)) table record]}))))
+        {:errors [(format "Record not added due to %s" (.getMessage ex))]}))))
