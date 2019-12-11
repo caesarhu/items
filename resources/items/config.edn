@@ -3,7 +3,12 @@
 
   :duct.migrator/ragtime
   {:migrations [#ig/ref :items.migrations/create-users
-                #ig/ref :items.migrations/create-items]}
+                #ig/ref :items.migrations/create-items
+                #ig/ref :items.migrations/create-units]}
+
+  [:duct.migrator.ragtime/sql :items.migrations/create-units]
+  {:up [#duct/resource "migrations/create-table-units-2019-12-10.sql"]
+   :down [#duct/resource "migrations/drop-table-units-2019-12-10.sql"]}
 
   [:duct.migrator.ragtime/sql :items.migrations/create-items]
   {:up [#duct/resource "migrations/create-table-items-2019-12-10.sql"]

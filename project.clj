@@ -8,7 +8,8 @@
                  [com.fzakaria/slf4j-timbre "0.3.14"]
                  [duct/module.sql "0.6.0"]
                  [org.postgresql/postgresql "42.2.9"]
-                 [hawk "0.2.11"]]
+                 [hawk "0.2.11"]
+                 [com.layerware/hugsql "0.5.1"]]
   :plugins [[duct/lein-duct "0.12.1"]]
   :main ^:skip-aot items.main
   :resource-paths ["resources" "target/resources"]
