@@ -59,8 +59,8 @@ SELECT units.id, units.單位, units.子單位
 FROM units
 order by id
 
--- :name get-items-period-item-by-id :? :1
--- :doc 取得期間內的table record 並結合itemlist table
+-- :name get-items-by-id :? :1
+-- :doc 取得指定id的table record 並結合itemlist table
 select items.*, t2.項目清單, t4.項目人數, t6.所有項目數量 from items
 left join
 (select t1.items_id, string_agg(t1.項目清單, ',') as 項目清單
