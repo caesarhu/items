@@ -13,11 +13,18 @@
             [items.system :refer [logger items-db parameter]]
             [clojure.spec.alpha :as s]
             [items.boundary.db :as db]
-            [orchestra.spec.test :as st]))
+            [orchestra.spec.test :as st])
+  (:import
+    java.util.Locale))
 
 (duct/load-hierarchy)
 
-(st/instrument)
+(def time-style
+  {:timestamp-opts
+   {:pattern "yyyy-MM-dd HH:mm:ss"
+    :locale (java.util.Locale. "zh_TW")}})
+
+(defn update-log-timestamp-opts [config])
 
 (defn read-config []
   (duct/read-config (io/resource "items/config.edn")))
@@ -34,3 +41,5 @@
   (load "local"))
 
 (integrant.repl/set-prep! #(duct/prep-config (read-config) profiles))
+
+(st/instrument)

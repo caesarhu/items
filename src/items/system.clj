@@ -2,6 +2,7 @@
   (:require
     [integrant.core :as ig]
     [integrant.repl.state :refer [config system]]
+    [taoensso.timbre :as timbre]
     [datoteka.core :as fs]))
 
 (defn parameter [k]
