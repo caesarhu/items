@@ -2,6 +2,9 @@
   (:require [hugsql.core :as hugsql]
             [items.system :refer [logger items-db]]
             [duct.logger :refer [log]]
+            [clojure.spec.alpha :as s]
+            [java-time :as jt]
+            [items.specs :as specs]
             duct.database.sql)
   (:import java.sql.SQLException))
 
@@ -60,3 +63,33 @@
       (get-stats-all db m)
       (catch SQLException ex
         (log (logger) :error (format "Query failed due to %s" (.getMessage ex)))))))
+
+;;; db spec
+
+(s/fdef units
+  :args (s/cat :db ::specs/boundary)
+  :ret (s/coll-of map?))
+
+(s/fdef users
+  :args (s/cat :db ::specs/boundary)
+  :ret (s/coll-of map?))
+
+(s/fdef insert-table-record
+  :args (s/cat :db ::specs/boundary
+               :record-map (s/keys :req-un [::specs/table ::specs/column-names ::specs/column-vals]))
+  :ret (s/keys :req-un [::specs/id]))
+
+(s/fdef items-period-record
+  :args (s/cat :db ::specs/boundary
+               :date-map (s/keys :req-un [::specs/start-date ::specs/end-date]))
+  :ret (s/coll-of map?))
+
+(s/fdef items-by-id
+  :args (s/cat :db ::specs/boundary
+               :id-map (s/keys :req-un [::specs/id]))
+  :ret map?)
+
+(s/fdef stats-all
+  :args (s/cat :db ::specs/boundary
+               :date-map (s/keys :req-un [::specs/start-date ::specs/end-date]))
+  :ret (s/coll-of map?))

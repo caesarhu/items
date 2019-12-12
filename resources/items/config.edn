@@ -1,6 +1,9 @@
 {:duct.profile/base
  {:duct.core/project-ns items
 
+  :items.json-path #duct/env ["JSON_PATH"]
+  :items.csv-path #duct/env ["CSV_PATH"]
+
   :duct.migrator/ragtime
   {:migrations [#ig/ref :items.migrations/create-users
                 #ig/ref :items.migrations/create-items

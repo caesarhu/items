@@ -1,7 +1,18 @@
 (ns items.system
   (:require
     [integrant.core :as ig]
-    [integrant.repl.state :refer [config system]]))
+    [integrant.repl.state :refer [config system]]
+    [datoteka.core :as fs]))
+
+(defmethod ig/init-key :items.json-path [_ path]
+  (if (fs/directory? path)
+    path
+    (throw (ex-info (str "Json directory not exists: " path) {:path path}))))
+
+(defmethod ig/init-key :items.csv-path [_ path]
+  (if (fs/directory? path)
+    path
+    (throw (ex-info (str "CSV directory not exists: " path) {:path path}))))
 
 (defn parameter [k]
   (when system

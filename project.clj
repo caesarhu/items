@@ -11,7 +11,9 @@
                  [hawk "0.2.11"]
                  [com.layerware/hugsql "0.5.1"]
                  ;; library by myself
-                 [com.github.caesarhu/shun "v0.1.1"]]
+                 [com.github.caesarhu/shun "v0.1.1"]
+                 [funcool/datoteka "1.1.0"]
+                 [clojure.java-time "0.3.2"]]
   :repositories [["jitpack" "https://jitpack.io"]]
   :plugins [[duct/lein-duct "0.12.1"]]
   :main ^:skip-aot items.main
@@ -27,4 +29,5 @@
    :project/dev  {:source-paths   ["dev/src"]
                   :resource-paths ["dev/resources"]
                   :dependencies   [[integrant/repl "0.3.1"]
+                                   [orchestra "2019.02.06-1"]
                                    [eftest "0.5.9"]]}})

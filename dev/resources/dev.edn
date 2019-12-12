@@ -1,2 +1,4 @@
-{:duct.database/sql
+{:items.json-path "/home/item/upload"
+ :items.csv-path "./csv"
+ :duct.database/sql
  {:jdbc-url "jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"}}

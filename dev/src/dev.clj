@@ -10,9 +10,14 @@
             [integrant.core :as ig]
             [integrant.repl :refer [clear halt go init prep reset]]
             [integrant.repl.state :refer [config system]]
-            [items.system :refer [logger items-db]]))
+            [items.system :refer [logger items-db parameter]]
+            [clojure.spec.alpha :as s]
+            [items.boundary.db :as db]
+            [orchestra.spec.test :as st]))
 
 (duct/load-hierarchy)
+
+(st/instrument)
 
 (defn read-config []
   (duct/read-config (io/resource "items/config.edn")))
