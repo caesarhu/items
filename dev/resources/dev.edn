@@ -1,4 +1,13 @@
 {[:duct/const :items/json-path] "/home/item/upload"
  [:duct/const :items/csv-path] "./csv"
+
+ :duct.logger/timbre
+ {:level     :debug
+  :appenders {:duct.logger.timbre/spit  #ig/ref :duct.logger.timbre/spit
+              :duct.logger.timbre/brief #ig/ref :duct.logger.timbre/brief}}
+
+ :duct.logger.timbre/spit  {:fname "./logs/dev.log"}
+ :duct.logger.timbre/brief {:min-level :report}
+
  :duct.database/sql
  {:jdbc-url "jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"}}
