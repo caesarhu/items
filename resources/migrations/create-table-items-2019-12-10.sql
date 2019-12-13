@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS items
  查獲人簽章 TEXT,
  旅客簽章 TEXT,
  航空貨運業者簽章 TEXT,
- 所有備註 TEXT);
+ 所有備註 TEXT,
+ ip TEXT);
 --;;
 CREATE INDEX items_file_idx ON items(原始檔);
 CREATE INDEX items_name_idx ON items(員警姓名);

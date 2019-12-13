@@ -14,3 +14,9 @@
 
 (defn items-db []
   (parameter :duct.database.sql/hikaricp))
+
+(defn json-path []
+  (parameter [:duct/const :items/json-path]))
+
+(defn csv-path []
+  (parameter [:duct/const :items/csv-path]))

@@ -3,8 +3,8 @@
             [items.system :refer [logger items-db]]
             [duct.logger :refer [log]]
             [clojure.spec.alpha :as s]
-            [java-time :as jt]
             [items.specs :as specs]
+            [items.boundary.coerce]
             duct.database.sql)
   (:import java.sql.SQLException))
 

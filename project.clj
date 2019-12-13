@@ -14,7 +14,7 @@
                  [com.github.caesarhu/shun "v0.1.1"]
                  [funcool/datoteka "1.1.0"]
                  [clojure.java-time "0.3.2"]
-                 [tick "0.4.21-alpha"]]
+                 [cheshire "5.9.0"]]
   :repositories [["jitpack" "https://jitpack.io"]]
   :plugins [[duct/lein-duct "0.12.1"]]
   :main ^:skip-aot items.main
