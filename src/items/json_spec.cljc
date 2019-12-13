@@ -42,7 +42,7 @@
 (s/def ::單位 string?)
 (s/def ::子單位 string?)
 (s/def ::種類 string?)
-(s/def ::類別 string?)
+(s/def ::類別 (s/nilable string?))
 (s/def ::物品 (s/nilable string?))
 (s/def ::ip (s/and string? #(re-matches ip-regex %)))
 (s/def ::IpAddress (s/and string? #(re-matches ip-regex %)))
@@ -65,8 +65,8 @@
 
 
 (s/def ::item-spec
-  (s/keys :req-un [::items_id ::種類 ::類別]
-          :opt-un [::物品]))
+  (s/keys :req-un [::items_id ::種類]
+          :opt-un [::類別 ::物品]))
 
 (s/def ::people-spec
   (s/keys :req-un [::items_id ::種類 ::件數 ::人數]))
@@ -80,4 +80,9 @@
   (s/coll-of pos-int? :count 3))
 
 (s/def ::time-spec
-  (s/coll-of (complement neg?)))
+  (s/alt :hour-minute-second (s/cat :hosr (s/int-in 0 24)
+                                    :minute (s/int-in 0 60)
+                                    :second (s/int-in 0 60))
+         :hour-minute (s/cat :hosr (s/int-in 0 24)
+                             :minute (s/int-in 0 60))
+         :hour (s/cat :hosr (s/int-in 0 24))))

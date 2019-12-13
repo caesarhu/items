@@ -1,18 +1,18 @@
 -- :name get-items-period-record :? :*
--- :doc 取得期間內的table record 並結合itemlist table
+-- :doc 取得期間內的table record 並結合item_list table
 select items.*, t2.項目清單, t4.項目人數, t6.所有項目數量 from items
 left join
 (select t1.items_id, string_agg(t1.項目清單, ',') as 項目清單
 from
-(select itemlist.items_id, (itemlist.種類 || '-' || itemlist.類別 || '-' || itemlist.物品) as 項目清單
-from itemlist) t1
+(select item_list.items_id, (item_list.種類 || '-' || item_list.類別 || '-' || item_list.物品) as 項目清單
+from item_list) t1
 group by items_id) t2
 on items.id = t2.items_id
 left join
 (select t3.items_id, string_agg(t3.項目人數, ',') as 項目人數
 from
-(select itempeople.items_id, (itempeople.種類 || '-' || itempeople.件數 || '-' || itempeople.人數) as 項目人數
-from itempeople) t3
+(select item_people.items_id, (item_people.種類 || '-' || item_people.件數 || '-' || item_people.人數) as 項目人數
+from item_people) t3
 group by items_id) t4
 on items.id = t4.items_id
 left join
@@ -27,10 +27,10 @@ ORDER BY 單位, 子單位, 員警姓名, 查獲時間
 
 -- :name get-stats-all :? :*
 -- :doc 取得期間內全局的危險物品(危安物品)的統計資料
-SELECT items.單位, items.子單位, 員警姓名, itemlist.種類, itemlist.類別,
-	count(itemlist.類別) as 合計
-FROM items, itemlist
-WHERE itemlist.items_id = items.id and 查獲時間 >= :start-date and 查獲時間 < :end-date
+SELECT items.單位, items.子單位, 員警姓名, item_list.種類, item_list.類別,
+	count(item_list.類別) as 合計
+FROM items, item_list
+WHERE item_list.items_id = items.id and 查獲時間 >= :start-date and 查獲時間 < :end-date
 group by
 GROUPING SETS (
 (單位, 子單位, 員警姓名, 種類, 類別),
@@ -60,20 +60,20 @@ FROM units
 order by id
 
 -- :name get-items-by-id :? :1
--- :doc 取得指定id的table record 並結合itemlist table
+-- :doc 取得指定id的table record 並結合item_list table
 select items.*, t2.項目清單, t4.項目人數, t6.所有項目數量 from items
 left join
 (select t1.items_id, string_agg(t1.項目清單, ',') as 項目清單
 from
-(select itemlist.items_id, (itemlist.種類 || '-' || itemlist.類別 || '-' || itemlist.物品) as 項目清單
-from itemlist) t1
+(select item_list.items_id, (item_list.種類 || '-' || item_list.類別 || '-' || item_list.物品) as 項目清單
+from item_list) t1
 group by items_id) t2
 on items.id = t2.items_id
 left join
 (select t3.items_id, string_agg(t3.項目人數, ',') as 項目人數
 from
-(select itempeople.items_id, (itempeople.種類 || '-' || itempeople.件數 || '-' || itempeople.人數) as 項目人數
-from itempeople) t3
+(select item_people.items_id, (item_people.種類 || '-' || item_people.件數 || '-' || item_people.人數) as 項目人數
+from item_people) t3
 group by items_id) t4
 on items.id = t4.items_id
 left join

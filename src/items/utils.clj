@@ -7,7 +7,10 @@
 
 (defn str->int [int-str]
   (try
-    (Long/parseLong int-str)))
+    (Long/parseLong int-str)
+    (catch Exception ex
+      (log (logger) :error "Convert string to int Error: " int-str)
+      0)))
 
 (defn head-number [s]
   (str->int (re-find #"\d+" s)))

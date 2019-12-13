@@ -4,11 +4,11 @@
     [cheshire.core :refer [parse-string]]
     [items.utils :as utils :refer [head-number get-json-files str->int]]
     [clojure.spec.alpha :as s]
-    [items.json-spec :as spec :refer [items-db-fields bug-transfrom-fields transfrom-keys]]
+    [items.json-spec :as spec :refer [items-db-fields bug-transfrom-fields json-transfrom-keys]]
     [java-time :as jt :refer [local-date local-date-time]]
     [clojure.string :as str]
     [duct.logger :refer [log]]
-    [items.system :refer [logger items-db]]
+    [items.system :refer [logger items-db json-path]]
     [items.boundary.db :as db]))
 
 (defn parse-date [date-str]
@@ -19,11 +19,13 @@
       (throw (ex-info (str "parse date fail! date-str: " date-str) {:date-str date-str :date-vec date-vec})))))
 
 (defn parse-time [time-str]
-  (let [time-str-vec (str/split time-str #"[:.]")
+  (let [time-str-vec (str/split time-str #"[:.：]")
         time-vec (map str->int (take 3 time-str-vec))]
     (if (s/valid? ::spec/time-spec time-vec)
       time-vec
-      (throw (ex-info (str "parse date fail! time-str: " time-str) {:time-str time-str :time-vec time-vec})))))
+      (do
+        (log (logger) :error (str "parse time fail! time-str: " time-str))
+        [0]))))
 
 (defn make-carry-time [j-map]
   (try
@@ -57,17 +59,17 @@
 
 (defn parse-item [raw-item items_id]
   (let [[kind sub_kind item] (str/split raw-item #"-")
-        result {:items_id items_id :種類 kind :類別 sub_kind :物品 (or item "")}]
+        result {:items_id items_id :種類 kind :類別 (or sub_kind "") :物品 (or item "")}]
     (if (s/valid? ::spec/item-spec result)
       result
-      (log (logger) :error (str "ItemList item parse fail:" result)))))
+      (log (logger) :error (str "item_list item parse fail:" result)))))
 
 (defn parse-people [raw-people items_id]
   (let [[kind piece people] (str/split raw-people #"-")
         result {:items_id items_id :種類 kind :件數 (head-number piece) :人數 (head-number people)}]
     (if (s/valid? ::spec/people-spec result)
       result
-      (log (logger) :error (str "ItemPeople people parse fail:" (s/explain ::spec/people-spec result))))))
+      (log (logger) :error (str "item_people people parse fail:" (s/explain ::spec/people-spec result))))))
 
 (defn parse-all-list [list items_id]
   (let [list-name (name (key list))
@@ -80,9 +82,10 @@
 (defn insert-table-row [table row]
   (try
     (let [column-names (map name (keys row))
-          column-vals (vals row)]
-      (db/insert-table-record (items-db) {:table table :column-names column-names :column-vals column-vals})
-      (log (logger) :info (str "insert table:" table "row sucess:" row)))
+          column-vals (vals row)
+          id-map (db/insert-table-record (items-db) {:table table :column-names column-names :column-vals column-vals})]
+      (log (logger) :info (str "insert sucess table:" table " row:" row))
+      (:id id-map))
     (catch Exception ex
       (log (logger) :error (.getMessage ex)))))
 
@@ -90,7 +93,6 @@
   (try
     (let [record (select-keys j-map items-db-fields)
           items_id (insert-table-row "items" record)]
-      (log (logger) :info "insert items record success:" record)
       (assoc j-map :items_id items_id))
     (catch Exception ex
       (log (logger) :error (str "insert items record fail:" j-map))
@@ -117,10 +119,10 @@
         item-people (calc-item-people j-map)
         all-list (not-empty (filter some? (map #(parse-all-list % items_id) 所有項目數量)))]
     (doall (map (fn [item]
-                  (insert-table-row "itemlist" item))
+                  (insert-table-row "item_list" item))
                 item-list))
     (doall (map (fn [people]
-                  (insert-table-row "itempeople" people))
+                  (insert-table-row "item_people" people))
                 item-people))
     (doall (map (fn [list]
                   (insert-table-row "all_list" list))
@@ -139,6 +141,7 @@
    (make-interceptor #(assoc % :查獲時間 (make-carry-time %)))
    (make-interceptor #(merge % (switch-unit %)))
    (make-interceptor bug-unit-transform)
+   (make-interceptor keys-transform)
    (make-interceptor (fn [j-map]
                        (if (s/valid? ::spec/items-record j-map)
                          j-map
@@ -152,10 +155,10 @@
 
 (defn json->db
   ([start-date end-date]
-   (let [files (get-json-files (env :json-path) start-date end-date)]
+   (let [files (get-json-files (json-path) start-date end-date)]
      (doall (map json->record files))))
   ([one-date]
    (json->db one-date one-date))
   ([]
-   (let [files (get-json-files (env :json-path))]
+   (let [files (get-json-files (json-path))]
      (doall (map json->record files)))))
