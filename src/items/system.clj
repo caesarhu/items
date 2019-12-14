@@ -20,3 +20,6 @@
 
 (defn csv-path []
   (parameter [:duct/const :items/csv-path]))
+
+(defn mail-config []
+  (parameter [:duct/const :items/mail-config]))

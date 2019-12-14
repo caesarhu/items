@@ -3,6 +3,7 @@
     [items.system :refer [logger items-db csv-path]]
     [items.boundary.db :as db]
     [java-time :as jt]
+    [datoteka.core :as fs]
     [items.items-query :as query]
     [items.json-spec :refer [items-db-fields detail-fields stat-fields]]
     [items.csv :refer [map->csv]]
@@ -74,4 +75,32 @@
   ([]
    (generate-detail-csv (jt/local-date 1 1 1) (jt/local-date 9999 9 9))))
 
+(defn safe-delete [path]
+  (when (fs/exists? path)
+    (fs/delete path)))
 
+(defn delete-stats-csv
+  ([start-date end-date]
+   (let [whole-name (generate-stats-name start-date end-date)
+         units (db/units (items-db))]
+     (safe-delete whole-name)
+     (for [unit units]
+       (let [unit-name (generate-stats-name start-date end-date unit)]
+         (safe-delete unit-name)))))
+  ([one-date]
+   (delete-stats-csv one-date one-date))
+  ([]
+   (delete-stats-csv (jt/local-date 1 1 1) (jt/local-date 9999 9 9))))
+
+(defn delete-detail-csv
+  ([start-date end-date]
+   (let [whole-name (generate-detail-name start-date end-date)
+         units (db/units (items-db))]
+     (safe-delete whole-name)
+     (for [unit units]
+       (let [unit-name (generate-detail-name start-date end-date unit)]
+         (safe-delete unit-name)))))
+  ([one-date]
+   (delete-detail-csv one-date one-date))
+  ([]
+   (delete-detail-csv (jt/local-date 1 1 1) (jt/local-date 9999 9 9))))

@@ -1,8 +1,12 @@
 {:duct.profile/base
  {:duct.core/project-ns items
 
-  [:duct/const :items/json-path] #duct/env ["JSON_PATH"]
-  [:duct/const :items/csv-path] #duct/env ["CSV_PATH"]
+  [:duct/const :items/json-path] #duct/env ["JSON_PATH" :or "/home/item/upload"]
+  [:duct/const :items/csv-path] #duct/env ["CSV_PATH" :or "./csv"]
+  [:duct/const :items/mail-config] {:host #duct/env ["MAIL_HOST" :or "mail.apb.gov.tw"]
+                                    :port #duct/env ["MAIL_PORT" Int :or 25]
+                                    :timeout "5000"
+                                    :connectiontimeout "5000"}
 
   :duct.migrator/ragtime
   {:migrations [#ig/ref :items.migrations/create-users

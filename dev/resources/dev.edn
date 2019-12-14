@@ -1,7 +1,4 @@
-{[:duct/const :items/json-path] "/home/item/upload"
- [:duct/const :items/csv-path] "./csv"
-
- :duct.logger/timbre
+{:duct.logger/timbre
  {:level     :debug
   :appenders {:duct.logger.timbre/spit  #ig/ref :duct.logger.timbre/spit
               :duct.logger.timbre/brief #ig/ref :duct.logger.timbre/brief}}

@@ -16,7 +16,8 @@
                  [clojure.java-time "0.3.2"]
                  [cheshire "5.9.0"]
                  [clj-bom "0.1.2"]
-                 [org.clojure/data.csv "0.1.4"]]
+                 [org.clojure/data.csv "0.1.4"]
+                 [com.draines/postal "2.0.3"]]
   :repositories [["jitpack" "https://jitpack.io"]]
   :plugins [[duct/lein-duct "0.12.1"]]
   :main ^:skip-aot items.main
