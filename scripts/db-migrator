@@ -5,4 +5,5 @@
 export DATABASE_URL="jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"
 
 cd /home/shun/dev/items
+/home/shun/bin/duct-items-db-up
 /home/shun/bin/lein run :duct/migrator

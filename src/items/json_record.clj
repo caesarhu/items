@@ -83,9 +83,9 @@
   (try
     (let [column-names (map name (keys row))
           column-vals (vals row)
-          id-map (db/insert-table-record (items-db) {:table table :column-names column-names :column-vals column-vals})]
-      (log (logger) :info (str "insert sucess table:" table " row:" row))
-      (:id id-map))
+          id-map (db/insert-table-record (items-db) {:table table :column-names column-names :column-vals column-vals})
+          id (:id id-map)]
+      id)
     (catch Exception ex
       (log (logger) :error (.getMessage ex)))))
 
@@ -93,7 +93,11 @@
   (try
     (let [record (select-keys j-map items-db-fields)
           items_id (insert-table-row "items" record)]
-      (assoc j-map :items_id items_id))
+      (if (pos-int? items_id)
+        (do
+          (log (logger) :info (str "insert items record success:" (:原始檔 j-map)))
+          (assoc j-map :items_id items_id))
+        (log (logger) :error (str "insert items record fail:" j-map))))
     (catch Exception ex
       (log (logger) :error (str "insert items record fail:" j-map))
       (log (logger) :error (.getMessage ex)))))
@@ -118,16 +122,18 @@
         item-list (not-empty (filter some? (map #(parse-item % items_id) 項目清單)))
         item-people (calc-item-people j-map)
         all-list (not-empty (filter some? (map #(parse-all-list % items_id) 所有項目數量)))]
-    (doall (map (fn [item]
-                  (insert-table-row "item_list" item))
-                item-list))
-    (doall (map (fn [people]
-                  (insert-table-row "item_people" people))
-                item-people))
-    (doall (map (fn [list]
-                  (insert-table-row "all_list" list))
-                all-list))
-    j-map))
+    (when (pos-int? items_id)
+      (do
+        (doall (map (fn [item]
+                      (insert-table-row "item_list" item))
+                    item-list))
+        (doall (map (fn [people]
+                      (insert-table-row "item_people" people))
+                    item-people))
+        (doall (map (fn [list]
+                      (insert-table-row "all_list" list))
+                    all-list))
+        j-map))))
 
 (def json-interceptors
   [(make-interceptor (fn [file]

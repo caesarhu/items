@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# 啟動危安物品登錄資料庫
+
+cd /home/shun/dev/items
+
+/usr/bin/docker-compose down
