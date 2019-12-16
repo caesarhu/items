@@ -12,7 +12,7 @@
                                :pattern :daily}
   :duct.logger.timbre/brief {:min-level :report}
 
-  [:duct/const :items/json-path] #duct/env ["JSON_PATH" :or "/home/item/10.160.30.98/upload/"]
+  [:duct/const :items/json-path] #duct/env ["JSON_PATH" :or "/home/item/upload"]
   [:duct/const :items/csv-path] #duct/env ["CSV_PATH" :or "./csv"]
   [:duct/const :items/mail-config] {:host #duct/env ["MAIL_HOST" :or "mail.apb.gov.tw"]
                                     :port #duct/env ["MAIL_PORT" Int :or 25]
