@@ -1,7 +1,18 @@
 {:duct.profile/base
  {:duct.core/project-ns items
 
-  [:duct/const :items/json-path] #duct/env ["JSON_PATH" :or "/home/item/upload"]
+  :duct.logger/timbre
+  {:level     :debug
+   :appenders {;:duct.logger.timbre/spit  #ig/ref :duct.logger.timbre/spit
+               :duct.logger.timbre/rolling #ig/ref :duct.logger.timbre/rolling
+               :duct.logger.timbre/brief #ig/ref :duct.logger.timbre/brief}}
+
+  ;:duct.logger.timbre/spit  {:fname "logs/prod.log"}
+  :duct.logger.timbre/rolling {:path "logs/items.log"
+                               :pattern :daily}
+  :duct.logger.timbre/brief {:min-level :report}
+
+  [:duct/const :items/json-path] #duct/env ["JSON_PATH" :or "/home/item/10.160.30.98/upload/"]
   [:duct/const :items/csv-path] #duct/env ["CSV_PATH" :or "./csv"]
   [:duct/const :items/mail-config] {:host #duct/env ["MAIL_HOST" :or "mail.apb.gov.tw"]
                                     :port #duct/env ["MAIL_PORT" Int :or 25]
@@ -47,4 +58,5 @@
  :duct.module/logging {}
 
  :duct.module/sql
- {:duct.database.sql/hikaricp {:jdbc-url #duct/env ["JDBC_URL"]}}}
+ {:duct.database.sql/hikaricp
+  {:database-url #duct/env ["DATABASE_URL" :or "jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"]}}}

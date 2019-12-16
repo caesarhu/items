@@ -86,23 +86,27 @@ INSERT INTO users (單位, 子單位) VALUES ('刑警大隊', '偵二隊');
 --;;
 INSERT INTO users (單位, 子單位) VALUES ('刑警大隊', '偵三隊');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '安檢隊');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '安檢隊', '警員', '葉明誠', 'sc2977@dns.apb.gov.tw');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '警備隊');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '金門所', '警員', '黃俊銘', 'kinmen@dns.apb.gov.tw');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '金門所');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '花蓮所', '警員', '甘瑞能', 'hualien@dns.apb.gov.tw');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '花蓮所');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '臺東所', '檢查員', '田瓊瑛', 'taitung@dns.apb.gov.tw');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '臺東所');
---;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '南竿所');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '南竿所', '檢查員', '唐佳幼', 'nangan@dns.apb.gov.tw');
 --;;
 INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '綠島所');
 --;;
 INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '蘭嶼所');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '北竿所');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '北竿所', '警員', '陳漢嘉', 'peigan@dns.apb.gov.tw');
 --;;
 INSERT INTO users (單位, 子單位) VALUES ('高雄分局', '安檢隊');
 --;;

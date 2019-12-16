@@ -10,7 +10,7 @@
             [integrant.core :as ig]
             [integrant.repl :refer [clear halt go init prep reset]]
             [integrant.repl.state :refer [config system]]
-            [items.system :refer [logger items-db parameter json-path csv-path]]
+            [items.system :refer [logger items-db parameter json-path csv-path update-log-timestamp-opts]]
             [clojure.spec.alpha :as s]
             [items.boundary.db :as db]
             [orchestra.spec.test :as st]
@@ -18,23 +18,9 @@
             [items.json-record :refer [json->db]]
             [items.items-query :refer [query-items-period-record get-items-stat]]
             [items.items-csv :refer [generate-stats-csv generate-detail-csv delete-stats-csv delete-detail-csv]]
-            [items.items-mail :refer [send-items-all send-items-daily]])
-  (:import
-    java.util.Locale
-    java.util.TimeZone))
+            [items.items-mail :refer [send-csv send-items-all send-items-daily]]))
 
 (duct/load-hierarchy)
-
-(def time-style
-  {:timestamp-opts
-   {:pattern "yyyy-MM-dd HH:mm:ss"
-    :locale (java.util.Locale. "zh_TW")
-    :timezone (java.util.TimeZone/getTimeZone "Asia/Taipei")}})
-
-(defn update-log-timestamp-opts [config]
-  (update config :duct.logger/timbre
-          (fn [log-config]
-            (merge log-config time-style))))
 
 (defn read-config []
   (duct/read-config (io/resource "items/config.edn")))

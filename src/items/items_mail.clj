@@ -2,6 +2,7 @@
   (:require
     [integrant.core :as ig]
     [postal.core :refer [send-message]]
+    [integrant.repl.state :refer [config system]]
     [java-time :as jt]
     [duct.logger :refer [log]]
     [items.system :refer [logger items-db json-path mail-config]]
@@ -100,9 +101,3 @@
 (defn send-items-daily []
   (send-items-all)
   (send-items-week))
-
-(defmethod ig/init-key :items.items-mail/send-items-daily
-  [_ _]
-  (generate-stats-csv (jt/local-date)))
-
-(derive :items.items-mail/send-items-daily :duct/daemon)
