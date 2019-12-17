@@ -54,7 +54,7 @@ INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第一隊'
  --;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第二隊', 'dznrg2zu@dns.apb.gov.tw');
 --;;
-INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第二隊', 'moka0128@dns.apb.gov.tw');
+INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第二隊', 'sec2team@dns.apb.gov.tw');
  --;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第三隊', 'secclear@dns.apb.gov.tw');
  --;;
