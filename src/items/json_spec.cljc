@@ -1,7 +1,18 @@
 (ns items.json-spec
   (:require
     [clojure.spec.alpha :as s]
-    [java-time :as jt]))
+    [java-time :as jt]
+    [items.system :refer [logger items-db json-path]]
+    [items.boundary.db :as db]))
+
+(defn apb-ip-set [db]
+  (let [ip-map (db/apb-ip db)]
+    (set (map :ip ip-map))))
+
+(def apb-ip-set-memory (memoize apb-ip-set))
+(defn valid-ip? [obj]
+  (let [valid-ip (apb-ip-set-memory (items-db))]
+    (contains? valid-ip obj)))
 
 (def items-db-fields
   [:單位 :子單位 :航空貨運業者簽章 :處理情形 :查獲人簽章 :員警姓名 :所有備註
@@ -44,7 +55,7 @@
 (s/def ::種類 string?)
 (s/def ::類別 (s/nilable string?))
 (s/def ::物品 (s/nilable string?))
-(s/def ::ip (s/and string? #(re-matches ip-regex %)))
+(s/def ::ip valid-ip?)
 (s/def ::IpAddress (s/and string? #(re-matches ip-regex %)))
 
 (s/def ::json-log
@@ -54,8 +65,8 @@
 
 (s/def ::items-record
   (s/keys :req-un [::攜帶方式 ::查獲時間 ::原始檔 ::班次 ::單位 ::子單位 ::員警姓名
-                   ::處理情形 ::查獲人簽章 ::所有備註]
-          :opt-un [::旅客簽章 ::航空貨運業者簽章 ::ip]))
+                   ::處理情形 ::查獲人簽章 ::所有備註 ::ip]
+          :opt-un [::旅客簽章 ::航空貨運業者簽章]))
 
 (s/def ::items_id pos-int?)
 (s/def ::件數 (complement neg?))

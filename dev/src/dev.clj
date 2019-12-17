@@ -18,7 +18,8 @@
             [items.json-record :refer [json->db]]
             [items.items-query :refer [query-items-period-record get-items-stat]]
             [items.items-csv :refer [generate-stats-csv generate-detail-csv delete-stats-csv delete-detail-csv]]
-            [items.items-mail :refer [send-csv send-items-all send-items-daily]]))
+            [items.items-mail :refer [send-csv send-items-all send-items-daily]]
+            [items.json-spec :as jspec]))
 
 (duct/load-hierarchy)
 

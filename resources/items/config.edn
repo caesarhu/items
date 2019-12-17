@@ -25,7 +25,12 @@
                 #ig/ref :items.migrations/create-units
                 #ig/ref :items.migrations/create-item-people
                 #ig/ref :items.migrations/create-item-list
-                #ig/ref :items.migrations/create-all-list]}
+                #ig/ref :items.migrations/create-all-list
+                #ig/ref :items.migrations/create-ipad]}
+
+  [:duct.migrator.ragtime/sql :items.migrations/create-ipad]
+  {:up [#duct/resource "migrations/create-table-ipad-2019-12-17.sql"]
+   :down [#duct/resource "migrations/drop-table-ipad-2019-12-17.sql"]}
 
   [:duct.migrator.ragtime/sql :items.migrations/create-all-list]
   {:up [#duct/resource "migrations/create-table-all-list-2019-12-10.sql"]

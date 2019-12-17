@@ -69,7 +69,7 @@
         result {:items_id items_id :種類 kind :件數 (head-number piece) :人數 (head-number people)}]
     (if (s/valid? ::spec/people-spec result)
       result
-      (log (logger) :error (str "item_people people parse fail:" (s/explain ::spec/people-spec result))))))
+      (log (logger) :error (str "item_people people parse fail:" (s/explain-data ::spec/people-spec result))))))
 
 (defn parse-all-list [list items_id]
   (let [list-name (name (key list))
@@ -77,7 +77,7 @@
         result {:items_id items_id :項目 list-name :數量 list-val}]
     (if (s/valid? ::spec/all-list-spec result)
       result
-      (log (logger) :error (str "all_list list parse fail:" (s/explain ::spec/all-list-spec result))))))
+      (log (logger) :error (str "all_list list parse fail:" (s/explain-data ::spec/all-list-spec result))))))
 
 (defn insert-table-row [table row]
   (try
@@ -142,7 +142,7 @@
    (make-interceptor (fn [j-map]
                        (if (s/valid? ::spec/json-log j-map)
                          j-map
-                         (log (logger) :error (str "json file invalid:" (s/explain ::spec/json-log j-map))))))
+                         (log (logger) :error (str "json file invalid:" (s/explain-data ::spec/json-log j-map))))))
    (make-interceptor #(update % :勤務單位 utils/remove-space))
    (make-interceptor #(assoc % :查獲時間 (make-carry-time %)))
    (make-interceptor #(merge % (switch-unit %)))
@@ -151,7 +151,7 @@
    (make-interceptor (fn [j-map]
                        (if (s/valid? ::spec/items-record j-map)
                          j-map
-                         (log (logger) :error (str "parse to item record fail:" j-map)))))
+                         (log (logger) :error (str "parse items record fail:" (s/explain-data ::spec/items-record j-map))))))
    (make-interceptor insert-items-record)
    (make-interceptor insert-items-list)
    (fn [x] :success)])

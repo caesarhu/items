@@ -84,3 +84,9 @@ from all_list) t5
 group by items_id) t6
 on items.id = t6.items_id
 WHERE id = :id
+
+-- :name get-ipad-ip :? :*
+-- :doc 取得所有本局ipad的ip
+SELECT ipad.ip
+FROM ipad
+order by ip

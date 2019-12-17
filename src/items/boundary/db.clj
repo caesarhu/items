@@ -11,6 +11,7 @@
 (hugsql/def-db-fns "sql/queries.sql")
 
 (defprotocol QueryDatabase
+  (apb-ip [db])
   (units [db])
   (users [db]))
 
@@ -25,7 +26,12 @@
     (try
       (get-users db)
       (catch SQLException ex
-        (log (logger) :error (format "Can not query units due to %s" (.getMessage ex)))))))
+        (log (logger) :error (format "Can not query units due to %s" (.getMessage ex))))))
+  (apb-ip [{db :spec}]
+    (try
+      (get-ipad-ip db)
+      (catch SQLException ex
+        (log (logger) :error (format "Can not query ipad-ip due to %s" (.getMessage ex)))))))
 
 (defprotocol InsertDatabase
   (insert-table-record [db m]))
