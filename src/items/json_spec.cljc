@@ -55,7 +55,8 @@
 (s/def ::種類 string?)
 (s/def ::類別 (s/nilable string?))
 (s/def ::物品 (s/nilable string?))
-(s/def ::ip valid-ip?)
+;(s/def ::ip valid-ip?) ;;嚴格檢核M-Police IP
+(s/def ::ip (s/and string? #(re-matches ip-regex %)))
 (s/def ::IpAddress (s/and string? #(re-matches ip-regex %)))
 
 (s/def ::json-log
