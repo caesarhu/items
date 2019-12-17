@@ -50,7 +50,7 @@
       (let [result (send-message (mail-config) (mail-data subject to-email file-path-1 file-path-2))]
         (log (logger) :info "send-message result:" result))
       (catch Exception ex
-        (log (logger) :error (.getMessage ex))))
+        (log (logger) :error (str "send-message " to-email " fail due to ") (.getMessage ex))))
     (log (logger) :error "csv file not exist! " file-path-1)))
 
 (defn get-email-list []
