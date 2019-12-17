@@ -97,9 +97,8 @@
         (do
           (log (logger) :info (str "insert items record success:" (:原始檔 j-map)))
           (assoc j-map :items_id items_id))
-        (log (logger) :error (str "insert items record fail:" j-map))))
+        (log (logger) :error (str "insert items record fail:" (:原始檔 j-map)))))
     (catch Exception ex
-      (log (logger) :error (str "insert items record fail:" j-map))
       (log (logger) :error (.getMessage ex)))))
 
 (defn calc-item-people [j-map]

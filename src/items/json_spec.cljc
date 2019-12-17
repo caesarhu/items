@@ -14,6 +14,10 @@
   (let [valid-ip (apb-ip-set-memory (items-db))]
     (contains? valid-ip obj)))
 
+(defn zero-pos-int? [x]
+  (or (zero? x)
+      (pos-int? x)))
+
 (def items-db-fields
   [:單位 :子單位 :航空貨運業者簽章 :處理情形 :查獲人簽章 :員警姓名 :所有備註
    :原始檔 :旅客簽章 :查獲時間 :班次 :攜帶方式 :ip])
@@ -70,10 +74,10 @@
           :opt-un [::旅客簽章 ::航空貨運業者簽章 ::ip]))
 
 (s/def ::items_id pos-int?)
-(s/def ::件數 (complement neg?))
-(s/def ::人數 (complement neg?))
+(s/def ::件數 zero-pos-int?)
+(s/def ::人數 zero-pos-int?)
 (s/def ::項目 string?)
-(s/def ::數量 (complement neg?))
+(s/def ::數量 zero-pos-int?)
 
 
 (s/def ::item-spec
