@@ -5,16 +5,6 @@
     [items.system :refer [logger items-db]]
     [java-time :as jt]))
 
-(defn str->int [int-str]
-  (try
-    (Long/parseLong int-str)
-    (catch Exception ex
-      (log (logger) :error "Convert string to int Error: " int-str)
-      0)))
-
-(defn head-number [s]
-  (str->int (re-find #"\d+" s)))
-
 (defn file-time [file]
   (-> (.lastModified file)
       jt/instant
@@ -77,3 +67,13 @@
 (defn remove-space [in-str]
   (when (string? in-str)
     (apply str (filter #(not= % (char \space)) (seq in-str)))))
+
+(defn str->int [int-str]
+  (try
+    (Long/parseLong (remove-space int-str))
+    (catch Exception ex
+      (log (logger) :error "Convert string to int Error: " int-str)
+      0)))
+
+(defn head-number [s]
+  (str->int (re-find #"\d+" s)))

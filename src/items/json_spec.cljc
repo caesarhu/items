@@ -20,10 +20,10 @@
 
 (def items-db-fields
   [:單位 :子單位 :航空貨運業者簽章 :處理情形 :查獲人簽章 :員警姓名 :所有備註
-   :原始檔 :旅客簽章 :查獲時間 :班次 :攜帶方式 :ip])
+   :原始檔 :旅客簽章 :查獲時間 :檔案時間 :班次 :攜帶方式 :ip])
 
 (def detail-fields
-  [:單位 :子單位 :員警姓名 :查獲時間 :班次 :攜帶方式 :處理情形 :項目清單 :項目人數 :所有項目數量 :所有備註
+  [:單位 :子單位 :員警姓名 :查獲時間 :檔案時間 :班次 :攜帶方式 :處理情形 :項目清單 :項目人數 :所有項目數量 :所有備註
    :原始檔 :查獲人簽章 :旅客簽章 :航空貨運業者簽章 :ip])
 
 (def stat-fields
@@ -53,6 +53,7 @@
 (s/def ::項目清單 (s/coll-of string?))
 (s/def ::攜帶方式 string?)
 (s/def ::查獲時間 jt/local-date-time?)
+(s/def ::檔案時間 jt/local-date-time?)
 (s/def ::原始檔 string?)
 (s/def ::單位 string?)
 (s/def ::子單位 string?)
@@ -70,7 +71,7 @@
 
 (s/def ::items-record
   (s/keys :req-un [::攜帶方式 ::查獲時間 ::原始檔 ::班次 ::單位 ::子單位 ::員警姓名
-                   ::處理情形 ::查獲人簽章 ::所有備註]
+                   ::處理情形 ::查獲人簽章 ::所有備註 ::檔案時間]
           :opt-un [::旅客簽章 ::航空貨運業者簽章 ::ip]))
 
 (s/def ::items_id pos-int?)
@@ -93,7 +94,9 @@
 ;;; date and time parse spec
 
 (s/def ::date-spec
-  (s/coll-of pos-int? :count 3))
+  (s/cat :year (s/int-in 2010 2030)
+         :month (s/int-in 1 13)
+         :date (s/int-in 1 31)))
 
 (s/def ::time-spec
   (s/alt :hour-minute-second (s/cat :hosr (s/int-in 0 24)

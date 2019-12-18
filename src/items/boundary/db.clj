@@ -18,20 +18,11 @@
 (extend-protocol QueryDatabase
   duct.database.sql.Boundary
   (units [{db :spec}]
-    (try
-      (get-units db)
-      (catch SQLException ex
-        (log (logger) :error (format "Can not query units due to %s" (.getMessage ex))))))
+    (get-units db))
   (users [{db :spec}]
-    (try
-      (get-users db)
-      (catch SQLException ex
-        (log (logger) :error (format "Can not query units due to %s" (.getMessage ex))))))
+    (get-users db))
   (apb-ip [{db :spec}]
-    (try
-      (get-ipad-ip db)
-      (catch SQLException ex
-        (log (logger) :error (format "Can not query ipad-ip due to %s" (.getMessage ex)))))))
+    (get-ipad-ip db)))
 
 (defprotocol InsertDatabase
   (insert-table-record [db m]))
@@ -39,13 +30,10 @@
 (extend-protocol InsertDatabase
   duct.database.sql.Boundary
   (insert-table-record [{db :spec} m]
-    (try
-      (let [result (insert-table! db m)]
-        (if-let [id (val (ffirst result))]
-          {:id id}
-          (log (logger) :error ["Failed to add record." m])))
-      (catch SQLException ex
-        (log (logger) :error (format "Record not added due to %s" (.getMessage ex)))))))
+    (let [result (insert-table! db m)]
+      (if-let [id (val (ffirst result))]
+        {:id id}
+        (log (logger) :error ["Failed to add record." m])))))
 
 (defprotocol ItemsDatabase
   (items-period-record [db m])
@@ -55,20 +43,11 @@
 (extend-protocol ItemsDatabase
   duct.database.sql.Boundary
   (items-period-record [{db :spec} m]
-    (try
-      (get-items-period-record db m)
-      (catch SQLException ex
-        (log (logger) :error (format "Query failed due to %s" (.getMessage ex))))))
+    (get-items-period-record db m))
   (items-by-id [{db :spec} m]
-    (try
-      (get-items-by-id db m)
-      (catch SQLException ex
-        (log (logger) :error (format "Query failed due to %s" (.getMessage ex))))))
+    (get-items-by-id db m))
   (stats-all [{db :spec} m]
-    (try
-      (get-stats-all db m)
-      (catch SQLException ex
-        (log (logger) :error (format "Query failed due to %s" (.getMessage ex)))))))
+    (get-stats-all db m)))
 
 ;;; db spec
 

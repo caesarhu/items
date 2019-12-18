@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS items
  原始檔 TEXT NOT NULL UNIQUE,
  攜帶方式 TEXT,
  查獲時間 TIMESTAMP,
+ 檔案時間 TIMESTAMP,
  班次  TEXT,
  單位 TEXT,
  子單位 TEXT,

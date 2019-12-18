@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # 啟動危安物品登錄資料庫
-
-cd /home/shun/dev/items
-
-/usr/bin/docker-compose up -d
+export PATH=~/bin:/usr/local/bin:/usr/sbin:/usr/bin
+cd ~/dev/items
+docker-compose up -d

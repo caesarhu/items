@@ -11,15 +11,26 @@
     [items.system :refer [logger items-db json-path]]
     [items.boundary.db :as db]))
 
+(defn take-n-str [n in-str]
+  (->> (seq in-str)
+       (take n)
+       (apply str)))
+
+(defn partition-n-str [n in-str]
+  (map #(apply str %) (partition n n (repeat \space) (seq in-str))))
+
 (defn parse-date [date-str]
-  (let [date-str-vec (str/split date-str #"-")
+  (let [[year month date] (str/split date-str #"-")
+        date-str-vec [(take-n-str 4 year) (take-n-str 2 month) (take-n-str 2 date)]
         date-vec (map str->int date-str-vec)]
     (if (s/valid? ::spec/date-spec date-vec)
       date-vec
       (throw (ex-info (str "parse date fail! date-str: " date-str) {:date-str date-str :date-vec date-vec})))))
 
 (defn parse-time [time-str]
-  (let [time-str-vec (str/split time-str #"[:.：]")
+  (let [time-str-vec (if (re-find #"[:：]" time-str)
+                       (str/split time-str #"[:.：]")
+                       (partition-n-str 2 time-str))
         time-vec (map str->int (take 3 time-str-vec))]
     (if (s/valid? ::spec/time-spec time-vec)
       time-vec
@@ -34,7 +45,6 @@
           time-vec (parse-time 時間)]
       (apply local-date-time (concat date-vec time-vec)))
     (catch Exception ex
-      (log (logger) :error (str "make-carry-time parse error:" (:日期 j-map) " " (:時間 j-map)))
       (log (logger) :error (.getMessage ex)))))
 
 (defn switch-unit [j-map]
@@ -90,16 +100,13 @@
       (log (logger) :error (.getMessage ex)))))
 
 (defn insert-items-record [j-map]
-  (try
-    (let [record (select-keys j-map items-db-fields)
-          items_id (insert-table-row "items" record)]
-      (if (pos-int? items_id)
-        (do
-          (log (logger) :info (str "insert items record success:" (:原始檔 j-map)))
-          (assoc j-map :items_id items_id))
-        (log (logger) :error (str "insert items record fail:" (:原始檔 j-map)))))
-    (catch Exception ex
-      (log (logger) :error (.getMessage ex)))))
+  (let [record (select-keys j-map items-db-fields)
+        items_id (insert-table-row "items" record)]
+    (if (pos-int? items_id)
+      (do
+        (log (logger) :info (str "insert items record success:" (:原始檔 j-map)))
+        (assoc j-map :items_id items_id))
+      (log (logger) :error (str "insert items record fail:" (:原始檔 j-map))))))
 
 (defn calc-item-people [j-map]
   (let [{:keys [項目清單 項目人數 items_id]} j-map
@@ -137,7 +144,8 @@
 (def json-interceptors
   [(make-interceptor (fn [file]
                        (let [json-str (slurp file)]
-                         (assoc (parse-string json-str true) :原始檔 (.getName file)))))
+                         (assoc (parse-string json-str true) :原始檔 (.getName file)
+                                                             :檔案時間 (utils/file-time file)))))
    (make-interceptor (fn [j-map]
                        (if (s/valid? ::spec/json-log j-map)
                          j-map
@@ -153,17 +161,22 @@
                          (log (logger) :error (str "parse items record fail:" (s/explain-data ::spec/items-record j-map))))))
    (make-interceptor insert-items-record)
    (make-interceptor insert-items-list)
-   (fn [x] :success)])
+   (fn [_]
+     :success)])
 
 (defn json->record [file]
   (execute json-interceptors file))
 
 (defn json->db
   ([start-date end-date]
-   (let [files (get-json-files (json-path) start-date end-date)]
-     (doall (map json->record files))))
+   (let [files (get-json-files (json-path) start-date end-date)
+         result (map json->record files)
+         total (count result)
+         success (count (filter #(= :success %) result))
+         report {:total total :success success :fail (- total success)}]
+     (log (logger) :info :items.json->db/result report)
+     report))
   ([one-date]
    (json->db one-date one-date))
   ([]
-   (let [files (get-json-files (json-path))]
-     (doall (map json->record files)))))
+   (json->db (local-date 1 1 1) (local-date 9999 9 9))))

@@ -10,12 +10,14 @@
             [integrant.core :as ig]
             [integrant.repl :refer [clear halt go init prep reset]]
             [integrant.repl.state :refer [config system]]
+            [duct.logger :refer [log]]
             [items.system :refer [logger items-db parameter json-path csv-path update-log-timestamp-opts]]
             [clojure.spec.alpha :as s]
             [items.boundary.db :as db]
             [orchestra.spec.test :as st]
+            [items.utils :as utils]
             [java-time :as jt :refer [local-date local-date-time]]
-            [items.json-record :refer [json->db]]
+            [items.json-record :as record :refer [json->db]]
             [items.items-query :refer [query-items-period-record get-items-stat]]
             [items.items-csv :refer [generate-stats-csv generate-detail-csv delete-stats-csv delete-detail-csv]]
             [items.items-mail :refer [send-csv send-items-all send-items-daily]]
@@ -37,6 +39,14 @@
 (when (io/resource "local.clj")
   (load "local"))
 
-(integrant.repl/set-prep! (comp update-log-timestamp-opts #(duct/prep-config (read-config) profiles)))
+(defn remove-rolling-appender [config]
+  (update config :duct.logger/timbre
+          (fn [log-config]
+            (let [appenders (:appenders log-config)]
+              (assoc log-config :appenders (dissoc appenders :duct.logger.timbre/rolling))))))
+
+(integrant.repl/set-prep! (comp remove-rolling-appender
+                                update-log-timestamp-opts
+                                #(duct/prep-config (read-config) profiles)))
 
 (st/instrument)
