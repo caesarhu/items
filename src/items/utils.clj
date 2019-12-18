@@ -64,6 +64,8 @@
    (let [file-paths (json-files path)]
      (transduce (file-xf) conj [] file-paths))))
 
+(defn after-time-json-files [path last-time])
+
 (defn remove-space [in-str]
   (when (string? in-str)
     (apply str (filter #(not= % (char \space)) (seq in-str)))))

@@ -141,6 +141,8 @@
                     all-list))
         j-map))))
 
+(def ^:private last-file-time (atom (jt/local-date-time)))
+
 (def json-interceptors
   [(make-interceptor (fn [file]
                        (let [json-str (slurp file)]
@@ -180,3 +182,6 @@
    (json->db one-date one-date))
   ([]
    (json->db (local-date 1 1 1) (local-date 9999 9 9))))
+
+(defn time-json->db []
+  (reset! last-file-time (db/last-file-time (items-db))))

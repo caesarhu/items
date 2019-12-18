@@ -11,6 +11,7 @@
 (hugsql/def-db-fns "sql/queries.sql")
 
 (defprotocol QueryDatabase
+  (last-file-time [db])
   (apb-ip [db])
   (units [db])
   (users [db]))
@@ -22,10 +23,13 @@
   (users [{db :spec}]
     (get-users db))
   (apb-ip [{db :spec}]
-    (get-ipad-ip db)))
+    (get-ipad-ip db))
+  (last-file-time [{db :spec}]
+    (:last_file_time (get-last-file-time db))))
 
 (defprotocol InsertDatabase
-  (insert-table-record [db m]))
+  (insert-table-record [db m])
+  (insert-last-file-time [db m]))
 
 (extend-protocol InsertDatabase
   duct.database.sql.Boundary
@@ -33,7 +37,12 @@
     (let [result (insert-table! db m)]
       (if-let [id (val (ffirst result))]
         {:id id}
-        (log (logger) :error ["Failed to add record." m])))))
+        (log (logger) :error :items.db/insert-table-record m))))
+  (insert-last-file-time [{db :spec} m]
+    (let [result (insert-last-time! db m)]
+      (if-let [last-file-time (val (ffirst result))]
+        last-file-time
+        (log (logger) :error :items.db/insert-last-file-time m)))))
 
 (defprotocol ItemsDatabase
   (items-period-record [db m])
