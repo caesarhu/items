@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 匯入所有json file 至資料庫
-export PATH=~/bin:/bin:/usr/local/bin:/usr/sbin:/usr/bin
+export PATH=~/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 export DATABASE_URL="jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"
 
 cd ~/dev/items
