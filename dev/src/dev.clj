@@ -14,6 +14,7 @@
             [items.system :refer [logger items-db parameter json-path csv-path update-log-timestamp-opts]]
             [clojure.spec.alpha :as s]
             [items.boundary.db :as db]
+            [datoteka.core :as fs]
             [orchestra.spec.test :as st]
             [items.utils :as utils]
             [java-time :as jt :refer [local-date local-date-time]]

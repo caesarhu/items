@@ -23,7 +23,7 @@
             (fs/directory? path)
             (fs/readable? path))
      (fs/list-dir path ext)
-     (log (logger) :error (str "json path directory invalie:" path))))
+     (log (logger) :error :items.utils/json-files path)))
   ([path]
    (json-files path "*.json")))
 
@@ -32,7 +32,7 @@
            (fs/readable? path)
            (fs/regular-file? path))
     (fs/file path)
-    (log (logger) :error (str "json file path invalie:" path))))
+    (log (logger) :error :items.utils/json-file path)))
 
 (defn file-date-between
   ([file start end]
@@ -54,6 +54,13 @@
      (map json-file)
      (filter #(> (.length %) 0)))))
 
+(defn time-file-xf [last-time]
+  (comp
+    (map json-file)
+    (filter some?)
+    (filter #(> (.length %) 0))
+    (filter #(jt/after? (file-time %) last-time))))
+
 (defn get-json-files
   ([path start-date end-date]
    (let [file-paths (json-files path)]
@@ -64,7 +71,9 @@
    (let [file-paths (json-files path)]
      (transduce (file-xf) conj [] file-paths))))
 
-(defn after-time-json-files [path last-time])
+(defn after-time-json-files [path last-time]
+  (let [file-paths (json-files path)]
+    (transduce (time-file-xf last-time) conj [] file-paths)))
 
 (defn remove-space [in-str]
   (when (string? in-str)

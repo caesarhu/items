@@ -2,7 +2,7 @@
   (:require
     [shun.interceptors :refer [make-interceptor execute]]
     [cheshire.core :refer [parse-string]]
-    [items.utils :as utils :refer [head-number get-json-files str->int]]
+    [items.utils :as utils :refer [head-number get-json-files str->int after-time-json-files]]
     [clojure.spec.alpha :as s]
     [items.json-spec :as spec :refer [items-db-fields bug-transfrom-fields json-transfrom-keys]]
     [java-time :as jt :refer [local-date local-date-time]]
@@ -141,13 +141,16 @@
                     all-list))
         j-map))))
 
-(def ^:private last-file-time (atom (jt/local-date-time)))
+(def ^:private last-file-time* (atom (jt/local-date-time)))
 
 (def json-interceptors
   [(make-interceptor (fn [file]
-                       (let [json-str (slurp file)]
+                       (let [json-str (slurp file)
+                             ftime (utils/file-time file)]
+                         (when (jt/after? ftime last-file-time*)
+                           (reset! last-file-time* ftime))
                          (assoc (parse-string json-str true) :原始檔 (.getName file)
-                                                             :檔案時間 (utils/file-time file)))))
+                                                             :檔案時間 ftime))))
    (make-interceptor (fn [j-map]
                        (if (s/valid? ::spec/json-log j-map)
                          j-map
@@ -184,4 +187,12 @@
    (json->db (local-date 1 1 1) (local-date 9999 9 9))))
 
 (defn time-json->db []
-  (reset! last-file-time (db/last-file-time (items-db))))
+  (reset! last-file-time* (db/last-file-time (items-db)))
+  (let [files (after-time-json-files (json-path) last-file-time*)
+        result (map json->record files)
+        total (count result)
+        success (count (filter #(= :success %) result))
+        report {:file_time last-file-time* :total total :success success :fail (- total success)}]
+    (log (logger) :info :items.json->db/result report)
+    (db/insert-last-file-time (items-db) report)
+    report))
