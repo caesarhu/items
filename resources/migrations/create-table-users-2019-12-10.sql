@@ -50,6 +50,9 @@ VALUES ('安檢大隊', '科員', '張寒白', 'b187167@dns.apb.gov.tw', '736-67
  --;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第一隊', 'lee5401@dns.apb.gov.tw');
 --;;
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email) VALUES
+('安檢大隊', '第一隊', '警員', '陳家華', 'monowah@dns.apb.gov.tw');
+--;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第一隊', 'sid101@dns.apb.gov.tw');
  --;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第二隊', 'dznrg2zu@dns.apb.gov.tw');
@@ -60,9 +63,18 @@ INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第三隊'
  --;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第四隊', 'joseph@dns.apb.gov.tw');
 --;;
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email) VALUES
+('安檢大隊', '第四隊', null, '公務信箱', 'team4@dns.apb.gov.tw');
+--;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第五隊', 'sec8team@dns.apb.gov.tw');
  --;;
 INSERT INTO users (單位, 子單位, email) VALUES ('安檢大隊', '第六隊', 'hello123@dns.apb.gov.tw');
+--;;
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email) VALUES
+('安檢大隊', '第六隊', '巡佐', '簡士堯', 'riki2860@dns.apb.gov.tw');
+--;;
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email) VALUES
+('安檢大隊', '第六隊', null, '公務信箱', 'sec6team@dns.apb.gov.tw');
 --;;
 INSERT INTO users (單位, 子單位) VALUES ('保安大隊', '第1隊第2分隊');
 --;;
