@@ -147,7 +147,7 @@
   [(make-interceptor (fn [file]
                        (let [json-str (slurp file)
                              ftime (utils/file-time file)]
-                         (when (jt/after? ftime last-file-time*)
+                         (when (jt/after? ftime @last-file-time*)
                            (reset! last-file-time* ftime))
                          (assoc (parse-string json-str true) :原始檔 (.getName file)
                                                              :檔案時間 ftime))))
@@ -188,11 +188,12 @@
 
 (defn time-json->db []
   (reset! last-file-time* (db/last-file-time (items-db)))
-  (let [files (after-time-json-files (json-path) last-file-time*)
+  (let [files (after-time-json-files (json-path) @last-file-time*)
         result (map json->record files)
         total (count result)
         success (count (filter #(= :success %) result))
-        report {:file_time last-file-time* :total total :success success :fail (- total success)}]
+        report {:file_time @last-file-time* :total total :success success :fail (- total success)}]
     (log (logger) :info :items.json->db/result report)
-    (db/insert-last-file-time (items-db) report)
+    (when (jt/after? @last-file-time* (db/last-file-time (items-db)))
+      (db/insert-last-file-time (items-db) report))
     report))
