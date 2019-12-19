@@ -39,10 +39,7 @@
         {:id id}
         (log (logger) :error :items.db/insert-table-record m))))
   (insert-last-file-time [{db :spec} m]
-    (let [result (insert-last-time! db m)]
-      (if-let [last-file-time (val (ffirst result))]
-        last-file-time
-        (log (logger) :error :items.db/insert-last-file-time m)))))
+    (insert-last-time! db m)))
 
 (defprotocol ItemsDatabase
   (items-period-record [db m])

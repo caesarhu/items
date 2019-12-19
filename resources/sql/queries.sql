@@ -91,10 +91,10 @@ SELECT ipad.ip
 FROM ipad
 order by ip
 
--- :name insert-last-time! :<!
+-- :name insert-last-time! :!
 -- :doc insert a table record
 INSERT INTO last_time (file_time, total, success, fail)
-VALUES (:file_time, :total, :success, :fail) returning file_time
+VALUES (:file_time, :total, :success, :fail)
 
 -- :name get-last-file-time :? :1
 -- :doc 取得最後的檔案時間
