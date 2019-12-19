@@ -180,6 +180,6 @@
         success (count (filter #(= :success %) result))
         report {:file_time @last-file-time* :total total :success success :fail (- total success)}]
     (log (logger) :info :items.json-record.time-json->db/result report)
-    (when (jt/after? @last-file-time* (db/last-file-time (items-db)))
+    (when (jt/after? (:file_time report) (db/last-file-time (items-db)))
       (doall (db/insert-last-file-time (items-db) report)))
     report))
