@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# 執行每日mail 危安物品登錄APP紀錄至各單位
+export PATH=~/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+export DATABASE_URL="jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1999"
+
+cd ~/dev/items
+duct-items-db-up
+lein run :items/test-send-items-all

@@ -48,10 +48,10 @@
       (System/setProperty "mail.mime.splitlongparameters" "false")
       ;; 附件中文檔名必須如此設定，才能讓所有mail client正確識別
       (let [result (send-message (mail-config) (mail-data subject to-email file-path-1 file-path-2))]
-        (log (logger) :info "send-message result:" result))
+        (log (logger) :info ::send-csv-success to-email))
       (catch Exception ex
-        (log (logger) :error (str "send-message " to-email " fail due to ") (.getMessage ex))))
-    (log (logger) :error "csv file not exist! " file-path-1)))
+        (log (logger) :error ::send-csv-fail (str to-email " due to: " (.getMessage ex)))))
+    (log (logger) :error ::send-csv-csv-file-not-exist (str file-path-1 " or " file-path-2))))
 
 (defn get-email-list []
   (let [list (db/users (items-db))]
@@ -108,3 +108,36 @@
   (send-items-all)
   (send-items-week)
   (send-items-month))
+
+(defn test-mail-items
+  ([start-date end-date]
+   (let [email-list (vector (first (get-email-list)))]
+     (for [unit email-list]
+       (let [{:keys [is_whole email]} unit
+             unit-name (if is_whole
+                         (generate-unit-name start-date end-date)
+                         (generate-unit-name start-date end-date unit))
+             detail-path (if is_whole
+                           (generate-detail-name start-date end-date)
+                           (generate-detail-name start-date end-date unit))
+             stats-path (if is_whole
+                          (generate-stats-name start-date end-date)
+                          (generate-stats-name start-date end-date unit))
+             subject (str "查獲危險(安)物品登錄資料-" unit-name)]
+         (send-csv subject email detail-path stats-path)))))
+  ([one-date]
+   (test-mail-items one-date one-date)))
+
+(defn test-send-items-all
+  ([start-date end-date]
+   (doall (time-json->db))
+   (doall (generate-detail-csv start-date end-date))
+   (doall (generate-stats-csv start-date end-date))
+   (doall (test-mail-items start-date end-date))
+   (doall (delete-stats-csv start-date end-date))
+   (doall (delete-detail-csv start-date end-date)))
+  ([one-date]
+   (test-send-items-all one-date one-date))
+  ([]
+   (let [yesterday (jt/minus (jt/local-date) (jt/days 1))]
+     (test-send-items-all yesterday))))
