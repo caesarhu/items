@@ -34,42 +34,12 @@
     (fs/file path)
     (log (logger) :error :items.utils/json-file path)))
 
-(defn file-date-between
-  ([file start end]
-   (let [file-date (jt/local-date (file-time file))]
-     (day-between? start end file-date)))
-  ([file one-day]
-   (file-date-between file one-day one-day)))
-
-(defn file-xf
-  ([start-date end-date]
-   (comp
-     (map json-file)
-     (filter #(file-date-between % start-date end-date))
-     (filter #(> (.length %) 0))))
-  ([one-date]
-   (file-xf one-date one-date))
-  ([]
-   (comp
-     (map json-file)
-     (filter #(> (.length %) 0)))))
-
 (defn time-file-xf [last-time]
   (comp
     (map json-file)
     (filter some?)
     (filter #(> (.length %) 0))
     (filter #(jt/after? (file-time %) last-time))))
-
-(defn get-json-files
-  ([path start-date end-date]
-   (let [file-paths (json-files path)]
-     (transduce (file-xf start-date end-date) conj [] file-paths)))
-  ([path one-date]
-   (get-json-files path one-date one-date))
-  ([path]
-   (let [file-paths (json-files path)]
-     (transduce (file-xf) conj [] file-paths))))
 
 (defn after-time-json-files [path last-time]
   (let [file-paths (json-files path)]

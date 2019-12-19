@@ -10,7 +10,7 @@
     [datoteka.core :as fs]
     [items.items-csv :refer [generate-unit-name generate-stats-name generate-detail-name
                              generate-detail-csv generate-stats-csv delete-stats-csv delete-detail-csv]]
-    [items.json-record :refer [json->db]]))
+    [items.json-record :refer [time-json->db]]))
 
 (def email-re #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
 
@@ -78,14 +78,12 @@
 
 (defn send-items-all
   ([start-date end-date]
-   (let [yesterday (jt/minus (jt/local-date) (jt/days 1))]
-     (doall (json->db yesterday))
-     (doall (json->db (jt/local-date)))
-     (doall (generate-detail-csv start-date end-date))
-     (doall (generate-stats-csv start-date end-date))
-     (doall (mail-items start-date end-date))
-     (doall (delete-stats-csv start-date end-date))
-     (doall (delete-detail-csv start-date end-date))))
+   (doall (time-json->db))
+   (doall (generate-detail-csv start-date end-date))
+   (doall (generate-stats-csv start-date end-date))
+   (doall (mail-items start-date end-date))
+   (doall (delete-stats-csv start-date end-date))
+   (doall (delete-detail-csv start-date end-date)))
   ([one-date]
    (send-items-all one-date one-date))
   ([]
@@ -98,6 +96,15 @@
     (when (jt/tuesday? today)
       (send-items-all (:start-date last-week) (:end-date last-week)))))
 
+(defn send-items-month []
+  (let [today (jt/local-date)
+        last-month-day (jt/minus today (jt/days 7))
+        last-month {:start-date (jt/adjust last-month-day :first-day-of-month)
+                    :end-date (jt/adjust last-month-day :last-day-of-month)}]
+    (when (= today (jt/adjust today :first-day-of-month))
+      (send-items-all (:start-date last-month) (:end-date last-month)))))
+
 (defn send-items-daily []
   (send-items-all)
-  (send-items-week))
+  (send-items-week)
+  (send-items-month))

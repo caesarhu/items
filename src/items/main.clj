@@ -17,7 +17,7 @@
 (defn run-fn [run-key]
   (case run-key
     :items/send-items-daily (mail/send-items-daily)
-    :items/items-to-db (json/json->db)))
+    :items/items-to-db (json/time-json->db)))
 
 (defn items-run [profiles run-keys]
   (let [read-config (fn [] (duct/read-config (duct/resource "items/config.edn")))]

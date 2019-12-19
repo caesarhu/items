@@ -2,7 +2,7 @@
   (:require
     [shun.interceptors :refer [make-interceptor execute]]
     [cheshire.core :refer [parse-string]]
-    [items.utils :as utils :refer [head-number get-json-files str->int after-time-json-files]]
+    [items.utils :as utils :refer [head-number str->int after-time-json-files]]
     [clojure.spec.alpha :as s]
     [items.json-spec :as spec :refer [items-db-fields bug-transfrom-fields json-transfrom-keys]]
     [java-time :as jt :refer [local-date local-date-time]]
@@ -172,20 +172,6 @@
 (defn json->record [file]
   (execute json-interceptors file))
 
-(defn json->db
-  ([start-date end-date]
-   (let [files (get-json-files (json-path) start-date end-date)
-         result (map json->record files)
-         total (count result)
-         success (count (filter #(= :success %) result))
-         report {:total total :success success :fail (- total success)}]
-     (log (logger) :info :items.json->db/result report)
-     report))
-  ([one-date]
-   (json->db one-date one-date))
-  ([]
-   (json->db (local-date 1 1 1) (local-date 9999 9 9))))
-
 (defn time-json->db []
   (reset! last-file-time* (db/last-file-time (items-db)))
   (let [files (after-time-json-files (json-path) @last-file-time*)
@@ -193,7 +179,7 @@
         total (count result)
         success (count (filter #(= :success %) result))
         report {:file_time @last-file-time* :total total :success success :fail (- total success)}]
-    (log (logger) :info :items.json->db/result report)
+    (log (logger) :info :items.json-record.time-json->db/result report)
     (when (jt/after? @last-file-time* (db/last-file-time (items-db)))
-      (db/insert-last-file-time (items-db) report))
+      (doall (db/insert-last-file-time (items-db) report)))
     report))
