@@ -141,7 +141,7 @@
                     all-list))
         j-map))))
 
-(def ^:private last-file-time* (atom (jt/local-date-time)))
+(def ^:private last-file-time* (atom nil))
 
 (def json-interceptors
   [(make-interceptor (fn [file]
