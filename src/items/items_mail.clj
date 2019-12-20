@@ -21,45 +21,51 @@
 (defn filter-email [coll]
   (filter #(valid-email? (:email %)) coll))
 
-(defn mail-data [subject to-email file-path-1 file-path-2]
-  (let [file-1 (fs/file file-path-1)
-        file-2 (fs/file file-path-2)
-        filename-1 (.getName file-1)
-        filename-2 (.getName file-2)]
-    {:from "system@dns.apb.gov.tw"
-     :to to-email
-     :subject subject
-     :body [{:type "text/plain; charset=utf-8"
-             :content "系統於每日凌晨3時自動寄送前1日危險(安)物品資料，每週二凌晨3時自動寄送前1週(上週二至週一)危險(安)物品資料，請勿直接回信，如有問題請聯絡勤指中心資訊室 736-2222。"}
-            ;;;; supports both dispositions:
-            {:type :attachment
-             :file-name filename-1
-             :content-type "text/x-csv; charset=utf-8"
-             :content file-1}
-            {:type :attachment
-             :file-name filename-2
-             :content-type "text/x-csv; charset=utf-8"
-             :content file-2}]}))
+(defn attach-mail-file [path]
+  (if (and (string? path) (fs/regular-file? path))
+    (let [file (fs/file path)
+          file-name (.getName file)]
+      {:type :attachment
+       :file-name file-name
+       :content-type "text/x-csv; charset=utf-8"
+       :content file})
+    (log (logger) :error ::attach-mail-file-fail path)))
 
-(defn send-csv [subject to-email file-path-1 file-path-2]
-  (if (and (fs/exists? file-path-1)
-           (fs/exists? file-path-2))
+(defn make-mail-data [from to subject content & file-paths]
+  (let [mail-header {:from    from
+                     :to      to
+                     :subject subject}
+        body-base [{:type "text/plain; charset=utf-8"
+                    :content content}]
+        attachments (filter some? (map attach-mail-file file-paths))
+        body (into body-base attachments)]
+    (assoc mail-header :body body)))
+
+(defn send-items-mail [to subject & paths]
+  (let [from "system@dns.apb.gov.tw"
+        content "系統於每日凌晨3時自動寄送前1日危險(安)物品資料，每週二凌晨3時自動寄送前1週(上週二至週一)危險(安)物品資料，請勿直接回信，如有問題請聯絡勤指中心資訊室 736-2222。"
+        mail-data (apply make-mail-data from to subject content paths)]
     (try
       (System/setProperty "mail.mime.splitlongparameters" "false")
       ;; 附件中文檔名必須如此設定，才能讓所有mail client正確識別
-      (let [result (send-message (mail-config) (mail-data subject to-email file-path-1 file-path-2))]
-        (log (logger) :info ::send-csv-success to-email))
+      (send-message (mail-config) mail-data)
+      (log (logger) :info ::send-items-mail-success to)
       (catch Exception ex
-        (log (logger) :error ::send-csv-fail (str to-email " due to: " (.getMessage ex)))))
-    (log (logger) :error ::send-csv-csv-file-not-exist (str file-path-1 " or " file-path-2))))
+        (log (logger) :error ::send-items-mail-fail (str to " due to: " (.getMessage ex)))))))
 
-(defn get-email-list []
-  (let [list (db/users (items-db))]
-    (filter-email list)))
+(defn get-email-list
+  ([not-test]
+   (let [list (db/users (items-db))
+         email-list (filter-email list)]
+     (if not-test
+       email-list
+       (vector (first email-list)))))
+  ([]
+   (get-email-list false)))
 
 (defn mail-items
-  ([start-date end-date]
-   (let [email-list (get-email-list)]
+  ([start-date end-date not-test]
+   (let [email-list (get-email-list not-test)]
      (for [unit email-list]
        (let [{:keys [is_whole email]} unit
              unit-name (if is_whole
@@ -71,8 +77,13 @@
              stats-path (if is_whole
                           (generate-stats-name start-date end-date)
                           (generate-stats-name start-date end-date unit))
-             subject (str "查獲危險(安)物品登錄資料-" unit-name)]
-         (send-csv subject email detail-path stats-path)))))
+             subject (str "查獲危險(安)物品登錄資料-" unit-name)
+             days (jt/as (jt/period start-date end-date) :days)]
+         (if (> days 7)
+           (send-items-mail email subject stats-path)
+           (send-items-mail email subject detail-path stats-path))))))
+  ([start-date end-date]
+   (mail-items start-date end-date true))
   ([one-date]
    (mail-items one-date one-date)))
 
@@ -109,31 +120,12 @@
   (send-items-week)
   (send-items-month))
 
-(defn test-mail-items
-  ([start-date end-date]
-   (let [email-list (vector (first (get-email-list)))]
-     (for [unit email-list]
-       (let [{:keys [is_whole email]} unit
-             unit-name (if is_whole
-                         (generate-unit-name start-date end-date)
-                         (generate-unit-name start-date end-date unit))
-             detail-path (if is_whole
-                           (generate-detail-name start-date end-date)
-                           (generate-detail-name start-date end-date unit))
-             stats-path (if is_whole
-                          (generate-stats-name start-date end-date)
-                          (generate-stats-name start-date end-date unit))
-             subject (str "查獲危險(安)物品登錄資料-" unit-name)]
-         (send-csv subject email detail-path stats-path)))))
-  ([one-date]
-   (test-mail-items one-date one-date)))
-
 (defn test-send-items-all
   ([start-date end-date]
    (doall (time-json->db))
    (doall (generate-detail-csv start-date end-date))
    (doall (generate-stats-csv start-date end-date))
-   (doall (test-mail-items start-date end-date))
+   (doall (mail-items start-date end-date false))
    (doall (delete-stats-csv start-date end-date))
    (doall (delete-detail-csv start-date end-date)))
   ([one-date]
@@ -141,3 +133,4 @@
   ([]
    (let [yesterday (jt/minus (jt/local-date) (jt/days 1))]
      (test-send-items-all yesterday))))
+

@@ -174,12 +174,13 @@
 
 (defn time-json->db []
   (reset! last-file-time* (db/last-file-time (items-db)))
-  (let [files (after-time-json-files (json-path) @last-file-time*)
+  (let [last-file-time @last-file-time*
+        files (after-time-json-files (json-path) last-file-time)
         result (map json->record files)
         total (count result)
         success (count (filter #(= :success %) result))
         report {:file_time @last-file-time* :total total :success success :fail (- total success)}]
-    (log (logger) :info :items.json-record.time-json->db/result report)
-    (when (jt/after? (:file_time report) (db/last-file-time (items-db)))
+    (log (logger) :info ::time-json->db-result report)
+    (when (jt/after? @last-file-time* last-file-time)
       (doall (db/insert-last-file-time (items-db) report)))
     report))
