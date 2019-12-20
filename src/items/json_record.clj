@@ -147,8 +147,7 @@
   [(make-interceptor (fn [file]
                        (let [json-str (slurp file)
                              ftime (utils/file-time file)]
-                         (when (jt/after? ftime @last-file-time*)
-                           (reset! last-file-time* ftime))
+                         (reset! last-file-time* (jt/max ftime @last-file-time*))
                          (assoc (parse-string json-str true) :原始檔 (.getName file)
                                                              :檔案時間 ftime))))
    (make-interceptor (fn [j-map]
