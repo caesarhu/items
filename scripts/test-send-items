@@ -6,4 +6,4 @@ export DATABASE_URL="jdbc:postgresql://localhost/itemdb?user=shun&password=fuck1
 
 cd ~/dev/items
 duct-items-db-up
-lein run :items/test-send-items-all
+lein run :items/test-send-items

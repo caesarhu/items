@@ -134,3 +134,10 @@
    (let [yesterday (jt/minus (jt/local-date) (jt/days 1))]
      (test-send-items-all yesterday))))
 
+(defmethod ig/init-key :items/test-send-items [_ options]
+  (let [system (:system options)]
+    (test-send-items-all)))
+
+(defmethod ig/init-key :items/send-items-daily [_ options]
+  (let [system (:system options)]
+    (send-items-daily)))

@@ -11,7 +11,7 @@
             [integrant.repl :refer [clear halt go init prep reset]]
             [integrant.repl.state :refer [config system]]
             [duct.logger :refer [log]]
-            [items.system :refer [logger items-db parameter json-path csv-path update-log-timestamp-opts]]
+            [items.system :refer [logger items-db json-path csv-path mail-config db-call]]
             [clojure.spec.alpha :as s]
             [items.boundary.db :as db]
             [datoteka.core :as fs]
@@ -47,7 +47,7 @@
               (assoc log-config :appenders (dissoc appenders :duct.logger.timbre/rolling))))))
 
 (integrant.repl/set-prep! (comp remove-rolling-appender
-                                update-log-timestamp-opts
+                                ;update-log-timestamp-opts
                                 #(duct/prep-config (read-config) profiles)))
 
 (st/instrument)

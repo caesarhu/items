@@ -1,7 +1,5 @@
 (ns items.boundary.db
   (:require [hugsql.core :as hugsql]
-            [items.system :refer [logger items-db]]
-            [duct.logger :refer [log]]
             [clojure.spec.alpha :as s]
             [items.specs :as specs]
             [items.boundary.coerce]
@@ -34,10 +32,7 @@
 (extend-protocol InsertDatabase
   duct.database.sql.Boundary
   (insert-table-record [{db :spec} m]
-    (let [result (insert-table! db m)]
-      (if-let [id (val (ffirst result))]
-        {:id id}
-        (log (logger) :error :items.db/insert-table-record m))))
+    (first (insert-table! db m)))
   (insert-last-file-time [{db :spec} m]
     (insert-last-time! db m)))
 

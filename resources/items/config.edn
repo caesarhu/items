@@ -1,23 +1,32 @@
 {:duct.profile/base
  {:duct.core/project-ns items
 
+  :items/items-to-db {:system #ig/ref :items.system}
+  :items/send-items-daily {:system #ig/ref :items.system}
+  :items/test-send-items {:system #ig/ref :items.system}
+
+  :items.system {:logger #ig/ref :duct.logger/timbre
+                 :database #ig/ref :duct.database.sql/hikaricp
+                 :mail-config {:host #duct/env ["MAIL_HOST" :or "mail.apb.gov.tw"]
+                               :port #duct/env ["MAIL_PORT" Int :or 25]
+                               :timeout "5000"
+                               :connectiontimeout "5000"}
+                 :json-path #duct/env ["JSON_PATH" :or "/home/item/upload"]
+                 :csv-path #duct/env ["CSV_PATH" :or "./csv"]}
+
   :duct.logger/timbre
   {:level     :debug
-   :appenders {;:duct.logger.timbre/spit  #ig/ref :duct.logger.timbre/spit
-               :duct.logger.timbre/rolling #ig/ref :duct.logger.timbre/rolling
-               :duct.logger.timbre/brief #ig/ref :duct.logger.timbre/brief}}
+   :appenders {:duct.logger.timbre/rolling #ig/ref :duct.logger.timbre/rolling
+               :duct.logger.timbre/brief #ig/ref :duct.logger.timbre/brief}
+   :timestamp-opts #ig/ref :items.timestamp-opts}
 
-  ;:duct.logger.timbre/spit  {:fname "logs/prod.log"}
   :duct.logger.timbre/rolling {:path "logs/items.log"
                                :pattern :daily}
   :duct.logger.timbre/brief {:min-level :report}
 
-  [:duct/const :items/json-path] #duct/env ["JSON_PATH" :or "/home/item/upload"]
-  [:duct/const :items/csv-path] #duct/env ["CSV_PATH" :or "./csv"]
-  [:duct/const :items/mail-config] {:host #duct/env ["MAIL_HOST" :or "mail.apb.gov.tw"]
-                                    :port #duct/env ["MAIL_PORT" Int :or 25]
-                                    :timeout "5000"
-                                    :connectiontimeout "5000"}
+  :items.timestamp-opts {:pattern "yyyy-MM-dd HH:mm:ss"
+                         :locale "zh_TW"
+                         :timezone "Asia/Taipei"}
 
   :duct.migrator/ragtime
   {:migrations [#ig/ref :items.migrations/create-users

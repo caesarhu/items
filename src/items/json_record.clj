@@ -1,5 +1,6 @@
 (ns items.json-record
   (:require
+    [integrant.core :as ig]
     [shun.interceptors :refer [make-interceptor execute]]
     [cheshire.core :refer [parse-string]]
     [items.utils :as utils :refer [head-number str->int after-time-json-files]]
@@ -183,3 +184,7 @@
     (when (jt/after? @last-file-time* last-file-time)
       (doall (db/insert-last-file-time (items-db) report)))
     report))
+
+(defmethod ig/init-key :items/items-to-db [_ options]
+  (let [system (:system options)]
+    (time-json->db)))

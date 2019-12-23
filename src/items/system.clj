@@ -1,33 +1,37 @@
 (ns items.system
   (:require
     [integrant.core :as ig]
-    [integrant.repl.state :refer [config system]]
-    [taoensso.timbre :as timbre]
-    [taoensso.timbre.appenders.3rd-party.rolling :as rolling]
-    [duct.logger :as logger]
-    [datoteka.core :as fs])
+    [duct.logger :as lg]
+    [taoensso.timbre.appenders.3rd-party.rolling :as rolling])
   (:import
     java.util.Locale
     java.util.TimeZone))
 
-(defn parameter [k]
-  (when system
-    (val (ig/find-derived-1 system k))))
+(def items-system (atom nil))
 
 (defn logger []
-  (parameter :duct.logger/timbre))
+  (:logger @items-system))
 
 (defn items-db []
-  (parameter :duct.database.sql/hikaricp))
+  (:database @items-system))
 
 (defn json-path []
-  (parameter [:duct/const :items/json-path]))
+  (:json-path @items-system))
 
 (defn csv-path []
-  (parameter [:duct/const :items/csv-path]))
+  (:csv-path @items-system))
 
 (defn mail-config []
-  (parameter [:duct/const :items/mail-config]))
+  (:mail-config @items-system))
+
+(defn log
+  ([level event]
+   (lg/log (logger) level event))
+  ([level event data]
+   (lg/log (logger) level event data)))
+
+(defn db-call [f & more]
+  (apply f (items-db) more))
 
 (def time-style
   {:timestamp-opts
@@ -35,11 +39,16 @@
     :locale (java.util.Locale. "zh_TW")
     :timezone (java.util.TimeZone/getTimeZone "Asia/Taipei")}})
 
-(defn update-log-timestamp-opts [config]
-  (update config :duct.logger/timbre
-          (fn [log-config]
-            (merge log-config time-style))))
-
 (defmethod ig/init-key :duct.logger.timbre/rolling [_ options]
   (-> (rolling/rolling-appender options)
       (merge (select-keys options [:min-level]))))
+
+(defmethod ig/init-key :items.system [_ options]
+  (reset! items-system options)
+  options)
+
+(defmethod ig/init-key :items.timestamp-opts [_ options]
+  (let [{:keys [pattern locale timezone]} options]
+    {:pattern pattern
+     :locale (java.util.Locale. locale)
+     :timezone (java.util.TimeZone/getTimeZone timezone)}))
