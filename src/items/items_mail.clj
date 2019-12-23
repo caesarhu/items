@@ -135,9 +135,11 @@
      (test-send-items-all yesterday))))
 
 (defmethod ig/init-key :items/test-send-items [_ options]
-  (let [system (:system options)]
-    (test-send-items-all)))
+  (let [{:keys [system environment]} options]
+    (when (= :production environment)
+      (test-send-items-all))))
 
 (defmethod ig/init-key :items/send-items-daily [_ options]
-  (let [system (:system options)]
-    (send-items-daily)))
+  (let [{:keys [system environment]} options]
+    (when (= :production environment)
+      (send-items-daily))))

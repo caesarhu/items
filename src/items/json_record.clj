@@ -186,5 +186,6 @@
     report))
 
 (defmethod ig/init-key :items/items-to-db [_ options]
-  (let [system (:system options)]
-    (time-json->db)))
+  (let [{:keys [system environment]} options]
+    (when (= :production environment)
+      (time-json->db))))

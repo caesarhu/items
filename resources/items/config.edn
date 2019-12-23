@@ -1,9 +1,12 @@
 {:duct.profile/base
  {:duct.core/project-ns items
 
-  :items/items-to-db {:system #ig/ref :items.system}
-  :items/send-items-daily {:system #ig/ref :items.system}
-  :items/test-send-items {:system #ig/ref :items.system}
+  :items/items-to-db {:system #ig/ref :items.system
+                      :environment #ig/ref :duct.core/environment}
+  :items/send-items-daily {:system #ig/ref :items.system
+                           :environment #ig/ref :duct.core/environment}
+  :items/test-send-items {:system #ig/ref :items.system
+                          :environment #ig/ref :duct.core/environment}
 
   :items.system {:logger #ig/ref :duct.logger/timbre
                  :database #ig/ref :duct.database.sql/hikaricp
