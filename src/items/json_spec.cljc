@@ -2,21 +2,17 @@
   (:require
     [clojure.spec.alpha :as s]
     [java-time :as jt]
-    [items.system :refer [logger items-db json-path]]
+    [items.system :refer [db-call]]
     [items.boundary.db :as db]))
 
-(defn apb-ip-set [db]
-  (let [ip-map (db/apb-ip db)]
+(defn apb-ip-set []
+  (let [ip-map (db-call db/apb-ip)]
     (set (map :ip ip-map))))
 
 (def apb-ip-set-memory (memoize apb-ip-set))
 (defn valid-ip? [obj]
-  (let [valid-ip (apb-ip-set-memory (items-db))]
+  (let [valid-ip (apb-ip-set-memory)]
     (contains? valid-ip obj)))
-
-(defn zero-pos-int? [x]
-  (or (zero? x)
-      (pos-int? x)))
 
 (def items-db-fields
   [:單位 :子單位 :航空貨運業者簽章 :處理情形 :查獲人簽章 :員警姓名 :所有備註
@@ -75,10 +71,10 @@
           :opt-un [::旅客簽章 ::航空貨運業者簽章 ::ip]))
 
 (s/def ::items_id pos-int?)
-(s/def ::件數 zero-pos-int?)
-(s/def ::人數 zero-pos-int?)
+(s/def ::件數 (s/or :zero zero? :pos-int pos-int?))
+(s/def ::人數 (s/or :zero zero? :pos-int pos-int?))
 (s/def ::項目 string?)
-(s/def ::數量 zero-pos-int?)
+(s/def ::數量 (s/or :zero zero? :pos-int pos-int?))
 
 
 (s/def ::item-spec
