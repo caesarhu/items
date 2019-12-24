@@ -8,8 +8,7 @@
     [items.json-spec :as spec :refer [items-db-fields bug-transfrom-fields json-transfrom-keys]]
     [java-time :as jt :refer [local-date local-date-time]]
     [clojure.string :as str]
-    [duct.logger :refer [log]]
-    [items.system :refer [logger items-db json-path]]
+    [items.system :refer [log db-call json-path]]
     [items.boundary.db :as db]))
 
 (defn take-n-str [n in-str]
@@ -36,7 +35,7 @@
     (if (s/valid? ::spec/time-spec time-vec)
       time-vec
       (do
-        (log (logger) :error (str "parse time fail! time-str: " time-str))
+        (log :error ::parse-time-fail time-str)
         [0]))))
 
 (defn make-carry-time [j-map]
@@ -46,7 +45,7 @@
           time-vec (parse-time 時間)]
       (apply local-date-time (concat date-vec time-vec)))
     (catch Exception ex
-      (log (logger) :error (.getMessage ex)))))
+      (log :error ::make-carry-time-fail (.getMessage ex)))))
 
 (defn switch-unit [j-map]
   (let [raw-unit (:勤務單位 j-map)
@@ -73,14 +72,14 @@
         result {:items_id items_id :種類 kind :類別 (or sub_kind "") :物品 (or item "")}]
     (if (s/valid? ::spec/item-spec result)
       result
-      (log (logger) :error (str "item_list item parse fail:" result)))))
+      (log :error ::parse-item-fail (s/explain-data ::spec/item-spec result)))))
 
 (defn parse-people [raw-people items_id]
   (let [[kind piece people] (str/split raw-people #"-")
         result {:items_id items_id :種類 kind :件數 (head-number piece) :人數 (head-number people)}]
     (if (s/valid? ::spec/people-spec result)
       result
-      (log (logger) :error (str "item_people people parse fail:" (s/explain-data ::spec/people-spec result))))))
+      (log :error ::parse-people-fail (s/explain-data ::spec/people-spec result)))))
 
 (defn parse-all-list [list items_id]
   (let [list-name (name (key list))
@@ -88,26 +87,26 @@
         result {:items_id items_id :項目 list-name :數量 list-val}]
     (if (s/valid? ::spec/all-list-spec result)
       result
-      (log (logger) :error (str "all_list list parse fail:" (s/explain-data ::spec/all-list-spec result))))))
+      (log :error ::parse-all-list-fail (s/explain-data ::spec/all-list-spec result)))))
 
 (defn insert-table-row [table row]
   (try
     (let [column-names (map name (keys row))
           column-vals (vals row)
-          id-map (db/insert-table-record (items-db) {:table table :column-names column-names :column-vals column-vals})
+          id-map (db-call db/insert-table-record {:table table :column-names column-names :column-vals column-vals})
           id (:id id-map)]
       id)
     (catch Exception ex
-      (log (logger) :error (.getMessage ex)))))
+      (log :error ::insert-table-row-fail (.getMessage ex)))))
 
 (defn insert-items-record [j-map]
   (let [record (select-keys j-map items-db-fields)
         items_id (insert-table-row "items" record)]
     (if (pos-int? items_id)
       (do
-        (log (logger) :info (str "insert items record success:" (:原始檔 j-map)))
+        (log :info ::insert-items-record-success (:原始檔 j-map))
         (assoc j-map :items_id items_id))
-      (log (logger) :error (str "insert items record fail:" (:原始檔 j-map))))))
+      (log :error ::insert-items-record-fail (:原始檔 j-map)))))
 
 (defn calc-item-people [j-map]
   (let [{:keys [項目清單 項目人數 items_id]} j-map
@@ -154,7 +153,7 @@
    (make-interceptor (fn [j-map]
                        (if (s/valid? ::spec/json-log j-map)
                          j-map
-                         (log (logger) :error (str "json file invalid:" (s/explain-data ::spec/json-log j-map))))))
+                         (log :error ::json-file-parsed-invalid (s/explain-data ::spec/json-log j-map)))))
    (make-interceptor #(update % :勤務單位 utils/remove-space))
    (make-interceptor #(assoc % :查獲時間 (make-carry-time %)))
    (make-interceptor #(merge % (switch-unit %)))
@@ -163,7 +162,7 @@
    (make-interceptor (fn [j-map]
                        (if (s/valid? ::spec/items-record j-map)
                          j-map
-                         (log (logger) :error (str "parse items record fail:" (s/explain-data ::spec/items-record j-map))))))
+                         (log :error ::items-record-parsed-invalid (s/explain-data ::spec/items-record j-map)))))
    (make-interceptor insert-items-record)
    (make-interceptor insert-items-list)
    (fn [_]
@@ -173,16 +172,16 @@
   (execute json-interceptors file))
 
 (defn time-json->db []
-  (reset! last-file-time* (db/last-file-time (items-db)))
+  (reset! last-file-time* (db-call db/last-file-time))
   (let [last-file-time @last-file-time*
         files (after-time-json-files (json-path) last-file-time)
         result (map json->record files)
         total (count result)
         success (count (filter #(= :success %) result))
         report {:file_time @last-file-time* :total total :success success :fail (- total success)}]
-    (log (logger) :info ::time-json->db-result report)
+    (log :info ::time-json->db-result report)
     (when (jt/after? @last-file-time* last-file-time)
-      (doall (db/insert-last-file-time (items-db) report)))
+      (doall (db-call db/insert-last-file-time report)))
     report))
 
 (defmethod ig/init-key :items/items-to-db [_ options]
