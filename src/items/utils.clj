@@ -1,8 +1,7 @@
 (ns items.utils
   (:require
     [datoteka.core :as fs]
-    [duct.logger :refer [log]]
-    [items.system :refer [logger items-db]]
+    [items.system :refer [log]]
     [java-time :as jt]))
 
 (defn file-time [file]
@@ -23,7 +22,7 @@
             (fs/directory? path)
             (fs/readable? path))
      (fs/list-dir path ext)
-     (log (logger) :error :items.utils/json-files path)))
+     (log :error :items.utils/json-files path)))
   ([path]
    (json-files path "*.json")))
 
@@ -32,7 +31,7 @@
            (fs/readable? path)
            (fs/regular-file? path))
     (fs/file path)
-    (log (logger) :error :items.utils/json-file path)))
+    (log :error :items.utils/json-file path)))
 
 (defn time-file-xf [last-time]
   (comp
@@ -53,7 +52,7 @@
   (try
     (Long/parseLong (remove-space int-str))
     (catch Exception ex
-      (log (logger) :error "Convert string to int Error: " int-str)
+      (log :error ::str->int-fail (str int-str " due to: " (.getMessage ex)))
       0)))
 
 (defn head-number [s]

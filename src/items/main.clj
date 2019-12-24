@@ -1,12 +1,10 @@
 (ns items.main
   (:gen-class)
-  (:require [duct.core :as duct]
-            [integrant.core :as ig]
-            [integrant.repl :refer [clear halt go init prep reset]]
-            [integrant.repl.state :refer [config system]]
-            [items.system :refer [logger items-db json-path csv-path]]
-            [items.items-mail :as mail]
-            [items.json-record :as json]))
+  (:require
+    [duct.core :as duct]
+    [items.system]
+    [items.json-record]
+    [items.items-mail]))
 
 (duct/load-hierarchy)
 

@@ -1,6 +1,6 @@
 (ns items.items-csv
   (:require
-    [items.system :refer [logger items-db csv-path]]
+    [items.system :refer [db-call csv-path]]
     [items.boundary.db :as db]
     [java-time :as jt]
     [datoteka.core :as fs]
@@ -49,7 +49,7 @@
   ([start-date end-date]
    (let [stat (query/get-items-stat start-date end-date)
          whole-name (generate-stats-name start-date end-date)
-         units (db/units (items-db))]
+         units (db-call db/units)]
      (map->csv whole-name stat stat-fields true)
      (for [unit units]
        (let [unit-name (generate-stats-name start-date end-date unit)
@@ -64,7 +64,7 @@
   ([start-date end-date]
    (let [detail (query/query-items-period-record start-date end-date)
          whole-name (generate-detail-name start-date end-date)
-         units (db/units (items-db))]
+         units (db-call db/units)]
      (map->csv whole-name detail detail-fields true)
      (for [unit units]
        (let [unit-detail (filter-unit unit detail)
@@ -82,7 +82,7 @@
 (defn delete-stats-csv
   ([start-date end-date]
    (let [whole-name (generate-stats-name start-date end-date)
-         units (db/units (items-db))]
+         units (db-call db/units)]
      (safe-delete whole-name)
      (for [unit units]
        (let [unit-name (generate-stats-name start-date end-date unit)]
@@ -95,7 +95,7 @@
 (defn delete-detail-csv
   ([start-date end-date]
    (let [whole-name (generate-detail-name start-date end-date)
-         units (db/units (items-db))]
+         units (db-call db/units)]
      (safe-delete whole-name)
      (for [unit units]
        (let [unit-name (generate-detail-name start-date end-date unit)]

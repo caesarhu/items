@@ -1,13 +1,12 @@
 (ns items.items-query
   (:require
     [java-time :as jt :refer [local-date local-date-time]]
-    [duct.logger :refer [log]]
-    [items.system :refer [logger items-db json-path]]
+    [items.system :refer [db-call]]
     [items.boundary.db :as db]))
 
 (defn query-items-period-record
   ([start-date end-date]
-   (let [query (db/items-period-record (items-db) {:start-date  start-date :end-date (jt/plus end-date (jt/days 1))})]
+   (let [query (db-call db/items-period-record {:start-date  start-date :end-date (jt/plus end-date (jt/days 1))})]
      query))
   ([one-date]
    (query-items-period-record one-date one-date))
@@ -16,7 +15,7 @@
 
 (defn get-items-stat
   ([start-date end-date]
-   (let [raw-stat (db/stats-all (items-db) {:start-date start-date :end-date (jt/plus end-date (jt/days 1))})
+   (let [raw-stat (db-call db/stats-all {:start-date start-date :end-date (jt/plus end-date (jt/days 1))})
          stat (map #(assoc % :開始日期 start-date :結束日期 end-date) raw-stat)
          switch-apb (fn [stat-map]
                       (if-let [單位 (:單位 stat-map)]

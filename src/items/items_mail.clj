@@ -4,8 +4,7 @@
     [postal.core :refer [send-message]]
     [integrant.repl.state :refer [config system]]
     [java-time :as jt]
-    [duct.logger :refer [log]]
-    [items.system :refer [logger items-db json-path mail-config]]
+    [items.system :refer [log db-call mail-config]]
     [items.boundary.db :as db]
     [datoteka.core :as fs]
     [items.items-csv :refer [generate-unit-name generate-stats-name generate-detail-name
@@ -29,7 +28,7 @@
        :file-name file-name
        :content-type "text/x-csv; charset=utf-8"
        :content file})
-    (log (logger) :error ::attach-mail-file-fail path)))
+    (log :error ::attach-mail-file-fail path)))
 
 (defn make-mail-data [from to subject content & file-paths]
   (let [mail-header {:from    from
@@ -49,13 +48,13 @@
       (System/setProperty "mail.mime.splitlongparameters" "false")
       ;; 附件中文檔名必須如此設定，才能讓所有mail client正確識別
       (send-message (mail-config) mail-data)
-      (log (logger) :info ::send-items-mail-success to)
+      (log :info ::send-items-mail-success to)
       (catch Exception ex
-        (log (logger) :error ::send-items-mail-fail (str to " due to: " (.getMessage ex)))))))
+        (log :error ::send-items-mail-fail (str to " due to: " (.getMessage ex)))))))
 
 (defn get-email-list
   ([not-test]
-   (let [list (db/users (items-db))
+   (let [list (db-call db/users)
          email-list (filter-email list)]
      (if not-test
        email-list

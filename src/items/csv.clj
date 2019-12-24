@@ -1,8 +1,7 @@
 (ns items.csv
   (:require
     [java-time :as jt]
-    [duct.logger :refer [log]]
-    [items.system :refer [logger items-db json-path]]
+    [items.system :refer [log]]
     [clj-bom.core :as bom]
     [clojure.data.csv :as csv]
     [shun.core :refer [coll-map select-vals]]))
@@ -37,10 +36,9 @@
   (try
     (with-open [writer (bom/bom-writer "UTF-8" path)]
       (csv/write-csv writer v)
-      (log (logger) :info "vec->csv success:" path))
+      (log :info ::vec->csv-success path))
     (catch Exception ex
-      (log (logger) :error "vec->csv error:" path)
-      (log (logger) :error  (.getMessage ex)))))
+      (log :error ::vec->csv-fail (str path "due to: " (.getMessage ex))))))
 
 (defn map->csv
   ([path m kv title?]
