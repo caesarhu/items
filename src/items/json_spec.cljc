@@ -92,7 +92,7 @@
 (s/def ::date-spec
   (s/cat :year (s/int-in 2010 2030)
          :month (s/int-in 1 13)
-         :date (s/int-in 1 31)))
+         :date (s/int-in 1 32)))
 
 (s/def ::time-spec
   (s/alt :hour-minute-second (s/cat :hosr (s/int-in 0 24)
