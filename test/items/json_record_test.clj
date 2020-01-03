@@ -29,7 +29,9 @@
     (is (= '(2019 12 15)
            (json/parse-date "2019-12-150277")))
     (is (= '(2019 12 15)
-           (json/parse-date "2019-12-15")))))
+           (json/parse-date "2019-12-15")))
+    (is (= '(2019 12 31)
+           (json/parse-date "2019-12-31")))))
 
 (deftest parse-time-test
   (testing "parse-time test"

@@ -23,9 +23,8 @@
   (let [[year month date] (str/split date-str #"-")
         date-str-vec [(take-n-str 4 year) (take-n-str 2 month) (take-n-str 2 date)]
         date-vec (map str->int date-str-vec)]
-    (if (s/valid? ::spec/date-spec date-vec)
-      date-vec
-      (throw (ex-info (str "parse date fail! date-str: " date-str) {:date-str date-str :date-vec date-vec})))))
+    (when (apply local-date date-vec)
+      date-vec)))
 
 (defn parse-time [time-str]
   (let [time-str-vec (if (re-find #"[:：]" time-str)
