@@ -113,9 +113,11 @@ VALUES ('臺北分局', '臺東所', '檢查員', '田瓊瑛', 'taitung@dns.apb.
 INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
 VALUES ('臺北分局', '南竿所', '檢查員', '唐佳幼', 'nangan@dns.apb.gov.tw');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '綠島所');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '綠島所', '所長', '許益銘', 'lutao@dns.apb.gov.tw');
 --;;
-INSERT INTO users (單位, 子單位) VALUES ('臺北分局', '蘭嶼所');
+INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
+VALUES ('臺北分局', '蘭嶼所', '所長', '彭立銓', 'lanyun@dns.apb.gov.tw');
 --;;
 INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
 VALUES ('臺北分局', '北竿所', '警員', '陳漢嘉', 'peigan@dns.apb.gov.tw');
