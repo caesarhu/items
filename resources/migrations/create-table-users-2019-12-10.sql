@@ -122,6 +122,30 @@ VALUES ('臺北分局', '蘭嶼所', '所長', '彭立銓', 'lanyun@dns.apb.gov.
 INSERT INTO users (單位, 子單位, 職稱, 姓名, email)
 VALUES ('臺北分局', '北竿所', '警員', '陳漢嘉', 'peigan@dns.apb.gov.tw');
 --;;
+INSERT INTO users (單位, 職稱, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '隊長', '劉安民', 'lam@dns.apb.gov.tw', '736-3959', true, 'lam', false);
+--;;
+INSERT INTO users (單位, 職稱, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '警員', '曾献能', 'eggtseng@dns.apb.gov.tw', '736-3959', true, 'eggtseng', false);
+--;;
+INSERT INTO users (單位, 職稱, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '警員', '黃鈺珊', 'uishan33@dns.apb.gov.tw', '736-3959', true, 'uishan33', false);
+--;;
+INSERT INTO users (單位, 職稱, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '警員', '謝明峰', 'feng666@dns.apb.gov.tw', '736-3959', true, 'feng666', false);
+--;;
+INSERT INTO users (單位, 子單位, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '臺中所', '臺中所', 'taichung@dns.apb.gov.tw', '736-3959', true, 'taichung', false);
+--;;
+INSERT INTO users (單位, 子單位, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '嘉義所', '嘉義所', 'chiayi@dns.apb.gov.tw', '736-3959', true, 'chiayi', false);
+--;;
+INSERT INTO users (單位, 子單位, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '臺南所', '臺南所', 'tainan@dns.apb.gov.tw', '736-3959', true, 'tainan', false);
+--;;
+INSERT INTO users (單位, 子單位, 姓名, email, 電話, admin, account, is_whole)
+VALUES ('高雄分局', '馬公所', '馬公所', 'makung@dns.apb.gov.tw', '736-3959', true, 'makung', false);
+--;;
 INSERT INTO users (單位, 子單位) VALUES ('高雄分局', '安檢隊');
 --;;
 INSERT INTO users (單位, 子單位) VALUES ('高雄分局', '警備隊');
