@@ -168,14 +168,17 @@
      :success)])
 
 (defn json->record [file]
-  (log :info ::json->record (str "file: " file))
-  (execute json-interceptors file))
+  (try
+    (execute json-interceptors file)
+    (catch Exception e
+      (log :error ::json->record (str "caught exception: " (.getMessage e) " file: " file))
+      nil)))
 
 (defn time-json->db []
   (reset! last-file-time* (db-call db/last-file-time))
   (let [last-file-time @last-file-time*
         files (after-time-json-files (json-path) last-file-time)
-        result (map json->record files)
+        result (filter some? (map json->record files))
         total (count result)
         success (count (filter #(= :success %) result))
         report {:file_time @last-file-time* :total total :success success :fail (- total success)}]
