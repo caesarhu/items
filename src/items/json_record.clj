@@ -168,6 +168,7 @@
      :success)])
 
 (defn json->record [file]
+  (log :info ::json->record (str "file: " file))
   (execute json-interceptors file))
 
 (defn time-json->db []
