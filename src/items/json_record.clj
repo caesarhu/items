@@ -143,7 +143,15 @@
 (def ^:private last-file-time* (atom nil))
 
 (def json-interceptors
-  [(make-interceptor (fn [file]
+  [{:name ::exceptions
+    :error (fn [ctx]
+             (let [error (:error ctx)
+                   data (ex-data error)]
+               (log :error ::json-interceptors data)
+               (-> ctx
+                   (dissoc :error)
+                   (assoc :response nil))))}
+   (make-interceptor (fn [file]
                        (let [json-str (slurp file)
                              ftime (utils/file-time file)]
                          (reset! last-file-time* (jt/max ftime @last-file-time*))
@@ -171,8 +179,7 @@
   (try
     (execute json-interceptors file)
     (catch Exception e
-      (log :error ::json->record (str "caught exception: " (.getMessage e) " file: " file))
-      nil)))
+      (log :error ::json->record (str "caught exception: " " file: " file)))))
 
 (defn time-json->db []
   (reset! last-file-time* (db-call db/last-file-time))
