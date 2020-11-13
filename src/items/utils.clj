@@ -1,7 +1,7 @@
 (ns items.utils
   (:require
     [datoteka.core :as fs]
-    [items.system :refer [log]]
+    [items.config :refer [log]]
     [java-time :as jt]))
 
 (defn file-time [file]

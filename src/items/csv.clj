@@ -1,7 +1,7 @@
 (ns items.csv
   (:require
     [java-time :as jt]
-    [items.system :refer [log]]
+    [items.config :refer [log]]
     [clj-bom.core :as bom]
     [clojure.data.csv :as csv]
     [shun.core :refer [coll-map select-vals]]))

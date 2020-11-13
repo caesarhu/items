@@ -8,7 +8,7 @@
     [items.json-spec :as spec :refer [items-db-fields bug-transfrom-fields json-transfrom-keys]]
     [java-time :as jt :refer [local-date local-date-time]]
     [clojure.string :as str]
-    [items.system :refer [log db-call json-path]]
+    [items.config :refer [log db-call json-path]]
     [items.boundary.db :as db]))
 
 (defn take-n-str [n in-str]

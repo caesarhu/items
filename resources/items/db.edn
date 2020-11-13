@@ -1,0 +1,36 @@
+{:objects
+ {:items {:cname "危安物品檔"
+          :order 1
+          :auto-id false
+          :fields {:id {:cname "危安物品id"
+                        :options [:primary-key]
+                        :spec pos-int?}
+                   :origin_file {:cname "原始檔"
+                                 :spec string?
+                                 :options [:unique]}
+                   :carry {:cname "攜帶方式"
+                           :spec string?}
+                   :check_time {:cname "查獲時間"
+                                :spec local-date-time?}
+                   :file_time {:cname "檔案時間"
+                               :spec local-date-time?}
+                   :flight {:cname "班次"
+                            :spec (s/nilable string?)}
+                   :work_unit {:cname "工作單位"
+                               :spec string?}
+                   :sub_unit {:cname "工作子單位"
+                              :spec (s/nilable string?)}
+                   :check_name {:cname "員警姓名"
+                                :spec string?}
+                   :process_way {:cname "處理方式"
+                                 :spec string?}
+                   :check_sign {:cname "查獲人簽章"
+                                :spec string?}
+                   :passenger_sign {:cname "旅客簽章"
+                                    :spec (s/nilable string?)}
+                   :trader_sign {:cname "貨運業者簽章"
+                                 :spec (s/nilable string?)}
+                   :ip {:cname "輸入設備IP"
+                        :spec string?}
+                   :memo {:cname "備註"
+                          :spec (s/nilable string?)}}}}}

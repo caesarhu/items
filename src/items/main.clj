@@ -2,7 +2,7 @@
   (:gen-class)
   (:require
     [duct.core :as duct]
-    [items.system]
+    [items.config]
     [items.json-record]
     [items.items-mail]))
 

@@ -4,7 +4,7 @@
     [postal.core :refer [send-message]]
     [integrant.repl.state :refer [config system]]
     [java-time :as jt]
-    [items.system :refer [log db-call mail-config]]
+    [items.config :refer [log db-call mail-config]]
     [items.boundary.db :as db]
     [datoteka.core :as fs]
     [items.items-csv :refer [generate-unit-name generate-stats-name generate-detail-name

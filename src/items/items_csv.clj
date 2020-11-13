@@ -1,6 +1,6 @@
 (ns items.items-csv
   (:require
-    [items.system :refer [db-call csv-path]]
+    [items.config :refer [db-call csv-path]]
     [items.boundary.db :as db]
     [java-time :as jt]
     [datoteka.core :as fs]

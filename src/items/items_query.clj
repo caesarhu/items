@@ -1,7 +1,7 @@
 (ns items.items-query
   (:require
     [java-time :as jt :refer [local-date local-date-time]]
-    [items.system :refer [db-call]]
+    [items.config :refer [db-call]]
     [items.boundary.db :as db]))
 
 (defn query-items-period-record

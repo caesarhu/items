@@ -2,7 +2,7 @@
   (:require
     [clojure.spec.alpha :as s]
     [java-time :as jt]
-    [items.system :refer [db-call]]
+    [items.config :refer [db-call]]
     [items.boundary.db :as db]))
 
 (defn apb-ip-set []

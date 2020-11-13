@@ -1,4 +1,4 @@
-(ns items.system
+(ns items.config
   (:require
     [integrant.core :as ig]
     [duct.logger :as lg]
