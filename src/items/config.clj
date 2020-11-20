@@ -1,28 +1,41 @@
 (ns items.config
   (:require
-    [integrant.core :as ig]
     [duct.logger :as lg]
+    [integrant.core :as ig]
     [taoensso.timbre.appenders.3rd-party.rolling :as rolling])
   (:import
-    java.util.Locale
-    java.util.TimeZone))
+    (java.util
+      Locale
+      TimeZone)))
+
 
 (def items-system (atom nil))
 
-(defn logger []
+
+(defn logger
+  []
   (:logger @items-system))
 
-(defn items-db []
+
+(defn items-db
+  []
   (:database @items-system))
 
-(defn json-path []
+
+(defn json-path
+  []
   (:json-path @items-system))
 
-(defn csv-path []
+
+(defn csv-path
+  []
   (:csv-path @items-system))
 
-(defn mail-config []
+
+(defn mail-config
+  []
   (:mail-config @items-system))
+
 
 (defn log
   ([level event]
@@ -30,8 +43,11 @@
   ([level event data]
    (lg/log (logger) level event data)))
 
-(defn db-call [f & more]
+
+(defn db-call
+  [f & more]
   (apply f (items-db) more))
+
 
 (def time-style
   {:timestamp-opts
@@ -39,13 +55,16 @@
     :locale (java.util.Locale. "zh_TW")
     :timezone (java.util.TimeZone/getTimeZone "Asia/Taipei")}})
 
+
 (defmethod ig/init-key :duct.logger.timbre/rolling [_ options]
   (-> (rolling/rolling-appender options)
       (merge (select-keys options [:min-level]))))
 
+
 (defmethod ig/init-key :items.system [_ options]
   (reset! items-system options)
   options)
+
 
 (defmethod ig/init-key :items.timestamp-opts [_ options]
   (let [{:keys [pattern locale timezone]} options]

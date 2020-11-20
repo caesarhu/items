@@ -1,26 +1,32 @@
 (ns items.csv
   (:require
-    [java-time :as jt]
-    [items.config :refer [log]]
     [clj-bom.core :as bom]
     [clojure.data.csv :as csv]
+    [items.config :refer [log]]
+    [java-time :as jt]
     [shun.core :refer [coll-map select-vals]]))
+
 
 (def time-format "YYYY/MM/dd HH:mm:ss")
 (def date-format "YYYY/MM/dd")
 
-(defn type-transform [field]
+
+(defn type-transform
+  [field]
   (cond
     (jt/local-date-time? field) (jt/format time-format field)
     (jt/local-date? field) (jt/format date-format field)
     :else field))
 
-(defn ->csv-row [m kv]
+
+(defn ->csv-row
+  [m kv]
   (coll-map (fn [k m]
               (->> (get m k)
                    type-transform))
             kv
             m))
+
 
 (defn map->csv-vec
   ([map-v kv title?]
@@ -32,13 +38,16 @@
   ([map-v kv]
    (map->csv-vec map-v kv false)))
 
-(defn vec->csv [path v]
+
+(defn vec->csv
+  [path v]
   (try
     (with-open [writer (bom/bom-writer "UTF-8" path)]
       (csv/write-csv writer v)
       (log :info ::vec->csv-success path))
     (catch Exception ex
       (log :error ::vec->csv-fail (str path "due to: " (.getMessage ex))))))
+
 
 (defn map->csv
   ([path m kv title?]

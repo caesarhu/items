@@ -24,7 +24,11 @@
                  [hodur/lacinia-schema "0.1.2"]
                  [hodur/visualizer-schema "0.1.1"]
                  [hodur-translate "0.1.1"]
-                 [seancorfield/next.jdbc "1.1.613"]]
+                 [seancorfield/next.jdbc "1.1.613"]
+                 [honeysql "1.0.444"]
+                 [expound "0.8.6"]
+                 [com.rpl/specter "1.1.3"]
+                 [metosin/spec-tools "0.10.4"]]
 
   :repositories [["jitpack" "https://jitpack.io"]]
   :plugins [[duct/lein-duct "0.12.1"]]

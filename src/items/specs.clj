@@ -1,11 +1,14 @@
 (ns items.specs
   (:require
     [clojure.spec.alpha :as s]
-    [java-time :as jt]
-    duct.database.sql))
+    [duct.database.sql]
+    [java-time :as jt]))
 
-(defn boundary? [obj]
+
+(defn boundary?
+  [obj]
   (instance? duct.database.sql.Boundary obj))
+
 
 (s/def ::boundary boundary?)
 (s/def ::date jt/local-date?)

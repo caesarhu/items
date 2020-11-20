@@ -1,14 +1,16 @@
 (ns items.utils-test
   (:require
     [clojure.test :refer :all]
-    [orchestra.spec.test :as st]
-    [items.utils :as utils]))
+    [items.utils :as utils]
+    [orchestra.spec.test :as st]))
+
 
 (use-fixtures
   :once
   (fn [f]
     (st/instrument)
     (f)))
+
 
 (deftest str->int-test
   (testing "str->int-test test"

@@ -1,21 +1,24 @@
 (ns items.items-csv
   (:require
-    [items.config :refer [db-call csv-path]]
-    [items.boundary.db :as db]
-    [java-time :as jt]
     [datoteka.core :as fs]
+    [items.boundary.db :as db]
+    [items.config :refer [db-call csv-path]]
+    [items.csv :refer [map->csv]]
     [items.items-query :as query]
     [items.json-spec :refer [items-db-fields detail-fields stat-fields]]
-    [items.csv :refer [map->csv]]
+    [java-time :as jt]
     [shun.core :refer [coll-map select-vals]]))
 
-(defn filter-unit [unit coll]
+
+(defn filter-unit
+  [unit coll]
   (let [kv [:單位 :子單位]
         unit-v (filter some? (select-vals unit kv))
         length (count unit-v)
         is-unit? (fn [m]
                    (= unit-v (take length (select-vals m kv))))]
     (filter is-unit? coll)))
+
 
 (defn generate-unit-name
   ([start-date end-date unit]
@@ -27,11 +30,13 @@
   ([start-date end-date]
    (generate-unit-name start-date end-date nil)))
 
+
 (defn generate-csv-name
   ([start-date end-date kind-str unit]
    (str (csv-path) kind-str (generate-unit-name start-date end-date unit)))
   ([start-date end-date kind-str]
    (generate-csv-name start-date end-date kind-str nil)))
+
 
 (defn generate-stats-name
   ([start-date end-date unit]
@@ -39,11 +44,13 @@
   ([start-date end-date]
    (generate-stats-name start-date end-date nil)))
 
+
 (defn generate-detail-name
   ([start-date end-date unit]
    (generate-csv-name start-date end-date "/明細-" unit))
   ([start-date end-date]
    (generate-detail-name start-date end-date nil)))
+
 
 (defn generate-stats-csv
   ([start-date end-date]
@@ -60,6 +67,7 @@
   ([]
    (generate-stats-csv (jt/local-date 1 1 1) (jt/local-date 9999 9 9))))
 
+
 (defn generate-detail-csv
   ([start-date end-date]
    (let [detail (query/query-items-period-record start-date end-date)
@@ -75,9 +83,12 @@
   ([]
    (generate-detail-csv (jt/local-date 1 1 1) (jt/local-date 9999 9 9))))
 
-(defn safe-delete [path]
+
+(defn safe-delete
+  [path]
   (when (fs/exists? path)
     (fs/delete path)))
+
 
 (defn delete-stats-csv
   ([start-date end-date]
@@ -91,6 +102,7 @@
    (delete-stats-csv one-date one-date))
   ([]
    (delete-stats-csv (jt/local-date 1 1 1) (jt/local-date 9999 9 9))))
+
 
 (defn delete-detail-csv
   ([start-date end-date]

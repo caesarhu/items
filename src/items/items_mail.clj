@@ -1,26 +1,33 @@
 (ns items.items-mail
   (:require
-    [integrant.core :as ig]
-    [postal.core :refer [send-message]]
-    [integrant.repl.state :refer [config system]]
-    [java-time :as jt]
-    [items.config :refer [log db-call mail-config]]
-    [items.boundary.db :as db]
     [datoteka.core :as fs]
+    [integrant.core :as ig]
+    [integrant.repl.state :refer [config system]]
+    [items.boundary.db :as db]
+    [items.config :refer [log db-call mail-config]]
     [items.items-csv :refer [generate-unit-name generate-stats-name generate-detail-name
                              generate-detail-csv generate-stats-csv delete-stats-csv delete-detail-csv]]
-    [items.json-record :refer [time-json->db]]))
+    [items.json-record :refer [time-json->db]]
+    [java-time :as jt]
+    [postal.core :refer [send-message]]))
+
 
 (def email-re #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
 
-(defn valid-email? [email-str]
+
+(defn valid-email?
+  [email-str]
   (when (string? email-str)
     (re-matches email-re email-str)))
 
-(defn filter-email [coll]
+
+(defn filter-email
+  [coll]
   (filter #(valid-email? (:email %)) coll))
 
-(defn attach-mail-file [path]
+
+(defn attach-mail-file
+  [path]
   (if (and (string? path) (fs/regular-file? path))
     (let [file (fs/file path)
           file-name (.getName file)]
@@ -30,7 +37,9 @@
        :content file})
     (log :error ::attach-mail-file-fail path)))
 
-(defn make-mail-data [from to subject content & file-paths]
+
+(defn make-mail-data
+  [from to subject content & file-paths]
   (let [mail-header {:from    from
                      :to      to
                      :subject subject}
@@ -40,7 +49,9 @@
         body (into body-base attachments)]
     (assoc mail-header :body body)))
 
-(defn send-items-mail [to subject & paths]
+
+(defn send-items-mail
+  [to subject & paths]
   (let [from "system@dns.apb.gov.tw"
         content "系統於每日凌晨3時自動寄送前1日危險(安)物品資料，每週二凌晨3時自動寄送前1週(上週二至週一)危險(安)物品資料，請勿直接回信，如有問題請聯絡勤指中心資訊室 736-2222。"
         mail-data (apply make-mail-data from to subject content paths)]
@@ -52,6 +63,7 @@
       (catch Exception ex
         (log :error ::send-items-mail-fail (str to " due to: " (.getMessage ex)))))))
 
+
 (defn get-email-list
   ([not-test]
    (let [list (db-call db/users)
@@ -61,6 +73,7 @@
        (vector (first email-list)))))
   ([]
    (get-email-list false)))
+
 
 (defn mail-items
   ([start-date end-date not-test]
@@ -86,6 +99,7 @@
   ([one-date]
    (mail-items one-date one-date)))
 
+
 (defn send-items-all
   ([start-date end-date]
    (doall (time-json->db))
@@ -100,13 +114,17 @@
    (let [yesterday (jt/minus (jt/local-date) (jt/days 1))]
      (send-items-all yesterday))))
 
-(defn send-items-week []
+
+(defn send-items-week
+  []
   (let [today (jt/local-date)
         last-week {:start-date (jt/minus today (jt/days 7)) :end-date (jt/minus today (jt/days 1))}]
     (when (jt/tuesday? today)
       (send-items-all (:start-date last-week) (:end-date last-week)))))
 
-(defn send-items-month []
+
+(defn send-items-month
+  []
   (let [today (jt/local-date)
         last-month-day (jt/minus today (jt/days 7))
         last-month {:start-date (jt/adjust last-month-day :first-day-of-month)
@@ -114,10 +132,13 @@
     (when (= today (jt/adjust today :first-day-of-month))
       (send-items-all (:start-date last-month) (:end-date last-month)))))
 
-(defn send-items-daily []
+
+(defn send-items-daily
+  []
   (send-items-all)
   (send-items-week)
   (send-items-month))
+
 
 (defn test-send-items-all
   ([start-date end-date]
@@ -133,10 +154,12 @@
    (let [yesterday (jt/minus (jt/local-date) (jt/days 1))]
      (test-send-items-all yesterday))))
 
+
 (defmethod ig/init-key :items/test-send-items [_ options]
   (let [{:keys [system environment]} options]
     (when (= :production environment)
       (test-send-items-all))))
+
 
 (defmethod ig/init-key :items/send-items-daily [_ options]
   (let [{:keys [system environment]} options]

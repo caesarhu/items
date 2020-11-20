@@ -1,8 +1,9 @@
 (ns items.items-query
   (:require
-    [java-time :as jt :refer [local-date local-date-time]]
+    [items.boundary.db :as db]
     [items.config :refer [db-call]]
-    [items.boundary.db :as db]))
+    [java-time :as jt :refer [local-date local-date-time]]))
+
 
 (defn query-items-period-record
   ([start-date end-date]
@@ -12,6 +13,7 @@
    (query-items-period-record one-date one-date))
   ([]
    (query-items-period-record (local-date 1 1 1) (local-date 9999 9 9))))
+
 
 (defn get-items-stat
   ([start-date end-date]

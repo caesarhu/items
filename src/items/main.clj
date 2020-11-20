@@ -3,12 +3,15 @@
   (:require
     [duct.core :as duct]
     [items.config]
-    [items.json-record]
-    [items.items-mail]))
+    [items.items-mail]
+    [items.json-record]))
+
 
 (duct/load-hierarchy)
 
-(defn -main [& args]
+
+(defn -main
+  [& args]
   (let [keys     (or (duct/parse-keys args) [:duct/daemon])
         profiles [:duct.profile/prod]]
     (-> (duct/resource "items/config.edn")

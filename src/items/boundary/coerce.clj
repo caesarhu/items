@@ -4,13 +4,16 @@
     [clojure.java.jdbc :as jdbc]
     [java-time :as jt]
     [java-time.pre-java8])
-  (:import org.postgresql.util.PGobject
-           java.sql.Array
-           clojure.lang.IPersistentMap
-           clojure.lang.IPersistentVector
-           [java.sql
-            BatchUpdateException
-            PreparedStatement]))
+  (:import
+    (clojure.lang
+      IPersistentMap
+      IPersistentVector)
+    (java.sql
+      Array
+      BatchUpdateException
+      PreparedStatement)
+    org.postgresql.util.PGobject))
+
 
 (extend-protocol jdbc/IResultSetReadColumn
   java.sql.Timestamp
@@ -34,10 +37,13 @@
         "citext" (str value)
         value))))
 
-(defn to-pg-json [value]
+
+(defn to-pg-json
+  [value]
   (doto (PGobject.)
     (.setType "jsonb")
     (.setValue (generate-string value))))
+
 
 (extend-type clojure.lang.IPersistentVector
   jdbc/ISQLParameter
@@ -48,6 +54,7 @@
       (if-let [elem-type (when (= (first type-name) \_) (apply str (rest type-name)))]
         (.setObject stmt idx (.createArrayOf conn elem-type (to-array v)))
         (.setObject stmt idx (to-pg-json v))))))
+
 
 (extend-protocol jdbc/ISQLValue
   java.util.Date

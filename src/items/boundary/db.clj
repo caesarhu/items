@@ -1,18 +1,27 @@
 (ns items.boundary.db
-  (:require [hugsql.core :as hugsql]
-            [clojure.spec.alpha :as s]
-            [items.specs :as specs]
-            [items.boundary.coerce]
-            duct.database.sql)
-  (:import java.sql.SQLException))
+  (:require
+    [clojure.spec.alpha :as s]
+    [duct.database.sql]
+    [hugsql.core :as hugsql]
+    [items.boundary.coerce]
+    [items.specs :as specs])
+  (:import
+    java.sql.SQLException))
+
 
 (hugsql/def-db-fns "sql/queries.sql")
 
+
 (defprotocol QueryDatabase
+
   (last-file-time [db])
+
   (apb-ip [db])
+
   (units [db])
+
   (users [db]))
+
 
 (extend-protocol QueryDatabase
   duct.database.sql.Boundary
@@ -25,9 +34,13 @@
   (last-file-time [{db :spec}]
     (:last_file_time (get-last-file-time db))))
 
+
 (defprotocol InsertDatabase
+
   (insert-table-record [db m])
+
   (insert-last-file-time [db m]))
+
 
 (extend-protocol InsertDatabase
   duct.database.sql.Boundary
@@ -36,10 +49,15 @@
   (insert-last-file-time [{db :spec} m]
     (insert-last-time! db m)))
 
+
 (defprotocol ItemsDatabase
+
   (items-period-record [db m])
+
   (items-by-id [db m])
+
   (stats-all [db m]))
+
 
 (extend-protocol ItemsDatabase
   duct.database.sql.Boundary
@@ -53,29 +71,34 @@
 ;;; db spec
 
 (s/fdef units
-  :args (s/cat :db ::specs/boundary)
-  :ret (s/coll-of map?))
+        :args (s/cat :db ::specs/boundary)
+        :ret (s/coll-of map?))
+
 
 (s/fdef users
-  :args (s/cat :db ::specs/boundary)
-  :ret (s/coll-of map?))
+        :args (s/cat :db ::specs/boundary)
+        :ret (s/coll-of map?))
+
 
 (s/fdef insert-table-record
-  :args (s/cat :db ::specs/boundary
-               :record-map (s/keys :req-un [::specs/table ::specs/column-names ::specs/column-vals]))
-  :ret (s/keys :req-un [::specs/id]))
+        :args (s/cat :db ::specs/boundary
+                     :record-map (s/keys :req-un [::specs/table ::specs/column-names ::specs/column-vals]))
+        :ret (s/keys :req-un [::specs/id]))
+
 
 (s/fdef items-period-record
-  :args (s/cat :db ::specs/boundary
-               :date-map (s/keys :req-un [::specs/start-date ::specs/end-date]))
-  :ret (s/coll-of map?))
+        :args (s/cat :db ::specs/boundary
+                     :date-map (s/keys :req-un [::specs/start-date ::specs/end-date]))
+        :ret (s/coll-of map?))
+
 
 (s/fdef items-by-id
-  :args (s/cat :db ::specs/boundary
-               :id-map (s/keys :req-un [::specs/id]))
-  :ret map?)
+        :args (s/cat :db ::specs/boundary
+                     :id-map (s/keys :req-un [::specs/id]))
+        :ret map?)
+
 
 (s/fdef stats-all
-  :args (s/cat :db ::specs/boundary
-               :date-map (s/keys :req-un [::specs/start-date ::specs/end-date]))
-  :ret (s/coll-of map?))
+        :args (s/cat :db ::specs/boundary
+                     :date-map (s/keys :req-un [::specs/start-date ::specs/end-date]))
+        :ret (s/coll-of map?))
