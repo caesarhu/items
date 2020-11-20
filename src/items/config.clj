@@ -2,39 +2,41 @@
   (:require
     [duct.logger :as lg]
     [integrant.core :as ig]
-    [taoensso.timbre.appenders.3rd-party.rolling :as rolling])
+    [clojure.java.io :as io]
+    [taoensso.timbre.appenders.3rd-party.rolling :as rolling]
+    [hodur-translate.core :as ht])
   (:import
     (java.util
       Locale
       TimeZone)))
 
 
-(def items-system (atom nil))
+(defonce system-config (atom nil))
 
 
 (defn logger
   []
-  (:logger @items-system))
+  (:logger @system-config))
 
 
 (defn items-db
   []
-  (:database @items-system))
+  (:database @system-config))
 
 
 (defn json-path
   []
-  (:json-path @items-system))
+  (:json-path @system-config))
 
 
 (defn csv-path
   []
-  (:csv-path @items-system))
+  (:csv-path @system-config))
 
 
 (defn mail-config
   []
-  (:mail-config @items-system))
+  (:mail-config @system-config))
 
 
 (defn log
@@ -48,6 +50,19 @@
   [f & more]
   (apply f (items-db) more))
 
+(defn read-schema [path]
+  (->> path
+       io/resource
+       slurp
+       read-string))
+
+(defn meta-db []
+  (:meta-db @system-config))
+
+(defn refresh-db []
+  (let [schema-path (:schema-path @system-config)
+        meta-db (ht/init-db (read-schema schema-path))]
+    (swap! system-config assoc :meta-db meta-db)))
 
 (def time-style
   {:timestamp-opts
@@ -62,8 +77,11 @@
 
 
 (defmethod ig/init-key :items.system [_ options]
-  (reset! items-system options)
-  options)
+  (let [schema-path (:schema-path options)
+        meta-db (ht/init-db (read-schema schema-path))
+        new-options (assoc options :meta-db meta-db)]
+    (reset! system-config new-options)
+    new-options))
 
 
 (defmethod ig/init-key :items.timestamp-opts [_ options]

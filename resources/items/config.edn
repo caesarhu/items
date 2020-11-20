@@ -9,6 +9,7 @@
                           :environment #ig/ref :duct.core/environment}
 
   :items.system {:logger #ig/ref :duct.logger/timbre
+                 :schema-path "items/schema.edn"
                  :database #ig/ref :duct.database.sql/hikaricp
                  :mail-config {:host #duct/env ["MAIL_HOST" :or "mail.apb.gov.tw"]
                                :port #duct/env ["MAIL_PORT" Int :or 25]

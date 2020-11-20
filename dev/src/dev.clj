@@ -16,13 +16,12 @@
     [integrant.repl :refer [clear halt go init prep reset]]
     [integrant.repl.state :refer [config system]]
     [items.boundary.db :as db]
-    [items.config :refer [logger items-db json-path csv-path mail-config db-call]]
+    [items.config :refer [logger items-db json-path csv-path mail-config db-call refresh-db meta-db]]
     [items.items-csv :refer [generate-stats-csv generate-detail-csv delete-stats-csv delete-detail-csv]]
     [items.items-mail :as mail :refer [send-items-all send-items-daily test-send-items-all]]
     [items.items-query :refer [query-items-period-record get-items-stat]]
     [items.json-record :as record :refer [time-json->db]]
     [items.json-spec :as jspec]
-    [items.schema :as schema]
     [items.utils :as utils]
     [java-time :as jt :refer [local-date local-date-time]]
     [orchestra.spec.test :as st]
@@ -45,10 +44,6 @@
 
 (def profiles
   [:duct.profile/dev :duct.profile/local])
-
-
-(def meta-db
-  (ht/init-db schema/meta-schema))
 
 
 (clojure.tools.namespace.repl/set-refresh-dirs "dev/src" "src" "test")
