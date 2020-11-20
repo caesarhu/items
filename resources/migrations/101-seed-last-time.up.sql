@@ -1,0 +1,1 @@
+INSERT INTO last_time (file_time, total, success, fail) VALUES ('0001-01-01', 0, 0, 0);

@@ -24,9 +24,7 @@
             [items.items-mail :as mail :refer [send-items-all send-items-daily test-send-items-all]]
             [items.json-spec :as jspec]
             [items.schema :as schema]
-            [hodur-engine.core :as hodur]
-            [hodur-datomic-schema.core :as hodur-datomic]
-            [hodur-spec-schema.core :as hodur-spec]))
+            [hodur-translate.core :as ht]))
 
 (duct/load-hierarchy)
 
@@ -38,6 +36,9 @@
 
 (def profiles
   [:duct.profile/dev :duct.profile/local])
+
+(def meta-db
+  (ht/init-db schema/meta-schema))
 
 (clojure.tools.namespace.repl/set-refresh-dirs "dev/src" "src" "test")
 
