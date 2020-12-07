@@ -1,6 +1,7 @@
 (ns items.json-record
   (:require
     [integrant.core :as ig]
+    [datoteka.core :as fs]
     [shun.interceptors :refer [make-interceptor execute]]
     [cheshire.core :refer [parse-string]]
     [items.utils :as utils :refer [head-number str->int after-time-json-files]]
@@ -8,6 +9,7 @@
     [items.json-spec :as spec :refer [items-db-fields bug-transfrom-fields json-transfrom-keys]]
     [java-time :as jt :refer [local-date local-date-time]]
     [clojure.string :as str]
+    [com.rpl.specter :as sp]
     [items.system :refer [log db-call json-path]]
     [items.boundary.db :as db]))
 
@@ -59,12 +61,11 @@
       j-map)))
 
 (defn keys-transform [j-map]
-  (let [target-keys (filter #(contains? json-transfrom-keys %) (keys j-map))
-        target-v (map (fn [k]
-                        (hash-map (get json-transfrom-keys k)
-                                  (get j-map k)))
-                      target-keys)]
-    (apply merge j-map target-v)))
+  (let [transform-fn (fn [k]
+                       (if-let [v (get json-transfrom-keys k)]
+                         v
+                         k))]
+    (sp/transform [sp/MAP-KEYS] transform-fn j-map)))
 
 (defn parse-item [raw-item items_id]
   (let [[kind sub_kind item] (str/split raw-item #"-")
